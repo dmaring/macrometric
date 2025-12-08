@@ -1,0 +1,1061 @@
+openapi: 3.0.3
+info:
+  title: Macrometric API
+  description: API for the Macro Calorie Tracker application
+  version: 1.0.0
+  contact:
+    name: Macrometric Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development
+  - url: https://api.macrometric.app/v1
+    description: Production
+
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Users
+    description: User profile management
+  - name: Diary
+    description: Daily food diary operations
+  - name: Foods
+    description: Food search and custom foods
+  - name: Meals
+    description: Custom meal management
+  - name: Categories
+    description: Meal category management
+
+paths:
+  # ============ AUTH ============
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Create a new user account
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Authenticate user
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      operationId: refreshToken
+      responses:
+        '200':
+          description: New access token issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid or expired refresh token
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout user
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Logged out successfully
+
+  /auth/password-reset:
+    post:
+      tags: [Auth]
+      summary: Request password reset email
+      operationId: requestPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '202':
+          description: Reset email sent (if account exists)
+
+  /auth/password-reset/{token}:
+    post:
+      tags: [Auth]
+      summary: Reset password with token
+      operationId: resetPassword
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid or expired token
+
+  # ============ USERS ============
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    delete:
+      tags: [Users]
+      summary: Delete user account and all data
+      operationId: deleteAccount
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Account deleted
+
+  /users/me/goals:
+    get:
+      tags: [Users]
+      summary: Get daily goals
+      operationId: getGoals
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daily goals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyGoal'
+
+    put:
+      tags: [Users]
+      summary: Set or update daily goals
+      operationId: setGoals
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyGoalInput'
+      responses:
+        '200':
+          description: Goals updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyGoal'
+
+  /users/me/onboarding:
+    post:
+      tags: [Users]
+      summary: Complete onboarding
+      operationId: completeOnboarding
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingInput'
+      responses:
+        '200':
+          description: Onboarding completed
+
+  # ============ DIARY ============
+  /diary/{date}:
+    get:
+      tags: [Diary]
+      summary: Get diary entries for a date
+      operationId: getDiaryByDate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2025-12-06'
+      responses:
+        '200':
+          description: Diary entries grouped by meal category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyDiary'
+
+  /diary/{date}/entries:
+    post:
+      tags: [Diary]
+      summary: Add a food entry to diary
+      operationId: addDiaryEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiaryEntryInput'
+      responses:
+        '201':
+          description: Entry added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiaryEntry'
+
+  /diary/entries/{entryId}:
+    put:
+      tags: [Diary]
+      summary: Update a diary entry
+      operationId: updateDiaryEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiaryEntryUpdate'
+      responses:
+        '200':
+          description: Entry updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiaryEntry'
+
+    delete:
+      tags: [Diary]
+      summary: Delete a diary entry
+      operationId: deleteDiaryEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Entry deleted
+
+  /diary/{date}/add-meal:
+    post:
+      tags: [Diary]
+      summary: Add all foods from a custom meal to diary
+      operationId: addMealToDiary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [meal_id, category_id]
+              properties:
+                meal_id:
+                  type: string
+                  format: uuid
+                category_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Meal entries added
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiaryEntry'
+
+  # ============ FOODS ============
+  /foods/search:
+    get:
+      tags: [Foods]
+      summary: Search foods (API + custom)
+      operationId: searchFoods
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+          description: Search query
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 50
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [all, api, custom]
+            default: all
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodSearchResults'
+
+  /foods/{foodId}:
+    get:
+      tags: [Foods]
+      summary: Get food details
+      operationId: getFood
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: foodId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Food details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodItem'
+        '404':
+          description: Food not found
+
+  /foods/custom:
+    get:
+      tags: [Foods]
+      summary: List user's custom foods
+      operationId: listCustomFoods
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Custom foods list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomFood'
+
+    post:
+      tags: [Foods]
+      summary: Create a custom food
+      operationId: createCustomFood
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFoodInput'
+      responses:
+        '201':
+          description: Custom food created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFood'
+
+  /foods/custom/{foodId}:
+    put:
+      tags: [Foods]
+      summary: Update a custom food
+      operationId: updateCustomFood
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: foodId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFoodInput'
+      responses:
+        '200':
+          description: Custom food updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFood'
+
+    delete:
+      tags: [Foods]
+      summary: Delete a custom food
+      operationId: deleteCustomFood
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: foodId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Custom food deleted
+
+  # ============ MEALS ============
+  /meals:
+    get:
+      tags: [Meals]
+      summary: List user's custom meals
+      operationId: listMeals
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Custom meals list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomMeal'
+
+    post:
+      tags: [Meals]
+      summary: Create a custom meal
+      operationId: createMeal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomMealInput'
+      responses:
+        '201':
+          description: Custom meal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomMeal'
+
+  /meals/{mealId}:
+    get:
+      tags: [Meals]
+      summary: Get meal details
+      operationId: getMeal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: mealId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Meal details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomMeal'
+
+    put:
+      tags: [Meals]
+      summary: Update a custom meal
+      operationId: updateMeal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: mealId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomMealInput'
+      responses:
+        '200':
+          description: Meal updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomMeal'
+
+    delete:
+      tags: [Meals]
+      summary: Delete a custom meal
+      operationId: deleteMeal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: mealId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Meal deleted
+
+  # ============ CATEGORIES ============
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List user's meal categories
+      operationId: listCategories
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Meal categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MealCategory'
+
+    post:
+      tags: [Categories]
+      summary: Create a meal category
+      operationId: createCategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealCategoryInput'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealCategory'
+
+  /categories/{categoryId}:
+    put:
+      tags: [Categories]
+      summary: Update a meal category
+      operationId: updateCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealCategoryInput'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealCategory'
+
+    delete:
+      tags: [Categories]
+      summary: Delete a meal category
+      operationId: deleteCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Category deleted
+        '409':
+          description: Category has entries - must move them first
+
+  /categories/reorder:
+    put:
+      tags: [Categories]
+      summary: Reorder meal categories
+      operationId: reorderCategories
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [category_ids]
+              properties:
+                category_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: Category IDs in desired order
+      responses:
+        '200':
+          description: Categories reordered
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Auth schemas
+    RegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          default: bearer
+        user:
+          $ref: '#/components/schemas/User'
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          default: bearer
+
+    # User schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        onboarding_completed:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    DailyGoal:
+      type: object
+      properties:
+        calories:
+          type: integer
+          nullable: true
+        protein_g:
+          type: number
+          nullable: true
+        carbs_g:
+          type: number
+          nullable: true
+        fat_g:
+          type: number
+          nullable: true
+
+    DailyGoalInput:
+      type: object
+      properties:
+        calories:
+          type: integer
+          minimum: 500
+          maximum: 10000
+          nullable: true
+        protein_g:
+          type: number
+          minimum: 0
+          nullable: true
+        carbs_g:
+          type: number
+          minimum: 0
+          nullable: true
+        fat_g:
+          type: number
+          minimum: 0
+          nullable: true
+
+    OnboardingInput:
+      type: object
+      properties:
+        goals:
+          $ref: '#/components/schemas/DailyGoalInput'
+        skip_goals:
+          type: boolean
+          default: false
+
+    # Food schemas
+    FoodItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        brand:
+          type: string
+          nullable: true
+        serving_size:
+          type: number
+        serving_unit:
+          type: string
+        calories:
+          type: integer
+        protein_g:
+          type: number
+        carbs_g:
+          type: number
+        fat_g:
+          type: number
+        source:
+          type: string
+          enum: [api, custom]
+
+    FoodSearchResults:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodItem'
+        total:
+          type: integer
+        query:
+          type: string
+
+    CustomFood:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        food:
+          $ref: '#/components/schemas/FoodItem'
+        created_at:
+          type: string
+          format: date-time
+
+    CustomFoodInput:
+      type: object
+      required: [name, serving_size, serving_unit, calories, protein_g, carbs_g, fat_g]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        brand:
+          type: string
+          maxLength: 255
+          nullable: true
+        serving_size:
+          type: number
+          minimum: 0.01
+        serving_unit:
+          type: string
+          maxLength: 20
+        calories:
+          type: integer
+          minimum: 0
+        protein_g:
+          type: number
+          minimum: 0
+        carbs_g:
+          type: number
+          minimum: 0
+        fat_g:
+          type: number
+          minimum: 0
+
+    # Meal schemas
+    CustomMeal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomMealItem'
+        totals:
+          $ref: '#/components/schemas/MacroTotals'
+        created_at:
+          type: string
+          format: date-time
+
+    CustomMealItem:
+      type: object
+      properties:
+        food:
+          $ref: '#/components/schemas/FoodItem'
+        quantity:
+          type: number
+        is_deleted:
+          type: boolean
+          description: True if the source custom food was deleted
+
+    CustomMealInput:
+      type: object
+      required: [name, items]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        items:
+          type: array
+          items:
+            type: object
+            required: [food_id, quantity]
+            properties:
+              food_id:
+                type: string
+              quantity:
+                type: number
+                minimum: 0.01
+
+    # Category schemas
+    MealCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        display_order:
+          type: integer
+        is_default:
+          type: boolean
+
+    MealCategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 50
+        display_order:
+          type: integer
+          minimum: 1
+
+    # Diary schemas
+    DailyDiary:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiaryCategory'
+        totals:
+          $ref: '#/components/schemas/MacroTotals'
+        goals:
+          $ref: '#/components/schemas/DailyGoal'
+
+    DiaryCategory:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/MealCategory'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiaryEntry'
+        totals:
+          $ref: '#/components/schemas/MacroTotals'
+
+    DiaryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        food:
+          $ref: '#/components/schemas/FoodItem'
+        quantity:
+          type: number
+        calculated:
+          $ref: '#/components/schemas/MacroTotals'
+        created_at:
+          type: string
+          format: date-time
+
+    DiaryEntryInput:
+      type: object
+      required: [food_id, category_id, quantity]
+      properties:
+        food_id:
+          type: string
+        category_id:
+          type: string
+          format: uuid
+        quantity:
+          type: number
+          minimum: 0.01
+
+    DiaryEntryUpdate:
+      type: object
+      properties:
+        category_id:
+          type: string
+          format: uuid
+        quantity:
+          type: number
+          minimum: 0.01
+
+    MacroTotals:
+      type: object
+      properties:
+        calories:
+          type: integer
+        protein_g:
+          type: number
+        carbs_g:
+          type: number
+        fat_g:
+          type: number
