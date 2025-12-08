@@ -135,3 +135,39 @@ def verify_token(token: str, token_type: str = "access") -> Optional[str]:
         return None
 
     return payload.get("sub")
+
+
+def create_password_reset_token(email: str) -> str:
+    """Create a password reset token.
+
+    Args:
+        email: User's email address
+
+    Returns:
+        Encoded JWT token string valid for 1 hour
+    """
+    expire = datetime.utcnow() + timedelta(hours=1)
+
+    to_encode = {
+        "sub": email,
+        "exp": expire,
+        "type": "password_reset",
+    }
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
+    return encoded_jwt
+
+
+def verify_password_reset_token(token: str) -> Optional[str]:
+    """Verify a password reset token and return the email.
+
+    Args:
+        token: The password reset token to verify
+
+    Returns:
+        The email if valid, None otherwise
+    """
+    return verify_token(token, token_type="password_reset")

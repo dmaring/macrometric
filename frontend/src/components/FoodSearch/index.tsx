@@ -101,13 +101,31 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
             >
               <div className="result-name">{food.name}</div>
               <div className="result-macros">
-                <span className="macro-item">{food.calories} cal</span>
-                <span className="macro-item">{food.protein_g}g protein</span>
-                <span className="macro-item">{food.carbs_g}g carbs</span>
-                <span className="macro-item">{food.fat_g}g fat</span>
+                <span className="macro-item">
+                  {food.calories !== null && food.calories !== undefined
+                    ? `${food.calories} cal`
+                    : 'Cal: N/A'}
+                </span>
+                <span className="macro-item">
+                  {food.protein_g !== null && food.protein_g !== undefined
+                    ? `${food.protein_g}g protein`
+                    : 'Protein: N/A'}
+                </span>
+                <span className="macro-item">
+                  {food.carbs_g !== null && food.carbs_g !== undefined
+                    ? `${food.carbs_g}g carbs`
+                    : 'Carbs: N/A'}
+                </span>
+                <span className="macro-item">
+                  {food.fat_g !== null && food.fat_g !== undefined
+                    ? `${food.fat_g}g fat`
+                    : 'Fat: N/A'}
+                </span>
               </div>
               <div className="result-serving">
-                Per {food.serving_size}{food.serving_unit}
+                {food.serving_size && food.serving_unit
+                  ? `Per ${food.serving_size}${food.serving_unit}`
+                  : 'Serving size: N/A'}
               </div>
             </button>
           ))}

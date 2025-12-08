@@ -1,24 +1,24 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Diary from './pages/Diary';
 import Onboarding from './pages/Onboarding';
 import Settings from './pages/Settings';
+import PasswordReset from './pages/PasswordReset';
 import ProtectedRoute from './components/ProtectedRoute';
-
-// Placeholder pages - will be implemented in later phases
-const ForgotPassword = () => <div className="page"><h1>Reset Password</h1><p>Coming soon...</p></div>;
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
 
         {/* Protected routes */}
         <Route
@@ -50,8 +50,9 @@ function App() {
         <Route path="/" element={<Navigate to="/diary" replace />} />
         <Route path="*" element={<Navigate to="/diary" replace />} />
         </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

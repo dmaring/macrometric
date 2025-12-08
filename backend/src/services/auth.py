@@ -13,6 +13,8 @@ from src.core.security import (
     create_access_token,
     create_refresh_token,
     verify_token,
+    create_password_reset_token,
+    verify_password_reset_token,
 )
 
 
@@ -214,3 +216,75 @@ class AuthService:
         """
         # For now, logout is handled client-side by removing tokens
         pass
+
+    def request_password_reset(self, email: str) -> str:
+        """Request a password reset token.
+
+        Args:
+            email: User's email address
+
+        Returns:
+            Password reset token (in production, this would be sent via email)
+
+        Note:
+            This always returns a token, even if the email doesn't exist.
+            This prevents email enumeration attacks.
+        """
+        # Normalize email
+        email = email.lower().strip()
+
+        # Check if user exists (but don't reveal this information)
+        user = self.get_user_by_email(email)
+
+        # Always generate a token to prevent timing attacks and email enumeration
+        token = create_password_reset_token(email)
+
+        # In a production system:
+        # 1. Store the token in the database with expiration
+        # 2. Send an email with a link containing the token
+        # 3. Only send email if user exists
+        # For now, we return the token directly for testing
+
+        return token
+
+    def reset_password(self, token: str, new_password: str) -> None:
+        """Reset a user's password using a reset token.
+
+        Args:
+            token: Password reset token
+            new_password: New password to set
+
+        Raises:
+            HTTPException: If token is invalid or password doesn't meet requirements
+        """
+        # Verify token
+        email = verify_password_reset_token(token)
+        if email is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired password reset token",
+            )
+
+        # Get user
+        user = self.get_user_by_email(email)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired password reset token",
+            )
+
+        # Validate new password
+        if not self.validate_password(new_password):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Password must be at least 8 characters with at least one letter and one number",
+            )
+
+        # Update password
+        user.password_hash = get_password_hash(new_password)
+        self.db.commit()
+
+        # In a production system, you might want to:
+        # 1. Invalidate all existing refresh tokens
+        # 2. Send a confirmation email
+        # 3. Log the password change for security auditing

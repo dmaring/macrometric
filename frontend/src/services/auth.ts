@@ -109,3 +109,24 @@ export async function getCurrentUser(): Promise<User> {
 export function hasStoredTokens(): boolean {
   return !!localStorage.getItem('access_token');
 }
+
+/**
+ * Request a password reset email.
+ */
+export async function requestPasswordReset(email: string): Promise<{ message: string }> {
+  const response = await api.post<{ message: string }>('/auth/password-reset', { email });
+  return response.data;
+}
+
+/**
+ * Confirm password reset with token and new password.
+ */
+export async function confirmPasswordReset(
+  token: string,
+  password: string
+): Promise<{ message: string }> {
+  const response = await api.post<{ message: string }>(`/auth/password-reset/${token}`, {
+    password,
+  });
+  return response.data;
+}

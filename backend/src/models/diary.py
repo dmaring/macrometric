@@ -34,8 +34,8 @@ class DiaryEntry(BaseModel):
     quantity = Column(Numeric(8, 2), nullable=False)
 
     # Relationships
-    user = relationship("User", backref="diary_entries")
-    category = relationship("MealCategory", backref="diary_entries")
+    user = relationship("User", back_populates="diary_entries")
+    category = relationship("MealCategory", back_populates="diary_entries")
     # Note: food relationship is dynamically loaded via service layer
     # food = relationship("FoodItem", backref="diary_entries")  # Removed due to flexible reference
 

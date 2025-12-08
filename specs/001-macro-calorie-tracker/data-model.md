@@ -227,3 +227,69 @@ When a **CustomFood** is soft-deleted:
 
 When a **MealCategory** is deleted:
 - DiaryEntry records must be moved to another category first (enforced in app logic)
+
+## Serving Size Conversions
+
+### Supported Serving Units
+
+The application supports the following serving units for food items:
+
+#### Metric Units
+- **g** (grams) - Base unit for solid foods
+- **ml** (milliliters) - Base unit for liquids
+- **kg** (kilograms) - 1 kg = 1000 g
+- **L** (liters) - 1 L = 1000 ml
+
+#### US Customary Units
+- **oz** (ounces) - 1 oz ≈ 28.35 g
+- **lb** (pounds) - 1 lb = 16 oz ≈ 453.59 g
+- **fl oz** (fluid ounces) - 1 fl oz ≈ 29.57 ml
+- **cup** - 1 cup = 8 fl oz ≈ 236.59 ml
+- **tbsp** (tablespoon) - 1 tbsp = 0.5 fl oz ≈ 14.79 ml
+- **tsp** (teaspoon) - 1 tsp = 1/3 tbsp ≈ 4.93 ml
+
+#### Generic Units
+- **serving** - Defined by the specific food item (e.g., "1 serving = 100g")
+- **piece** - Whole units (e.g., "1 piece = 1 apple")
+- **slice** - Food-specific slices
+- **container** - Package units
+
+### Conversion Behavior
+
+#### USDA API Foods
+- Foods from the USDA FoodData Central API come with their own serving sizes and units
+- The API provides nutrition data per 100g as a base
+- Users can search and select from multiple serving size options provided by USDA
+- No automatic conversion is performed - users select the desired serving size from available options
+
+#### Custom Foods
+- Users define serving size and unit when creating custom foods
+- Nutrition values are stored exactly as entered for that serving size
+- No automatic unit conversion is performed
+- Users adjust quantity (e.g., "1.5 servings") rather than converting units
+
+#### Quantity Adjustments
+- Users can adjust the quantity of any food item (decimal values supported, e.g., 0.5, 1.5, 2.0)
+- Nutrition calculations: `total_macros = base_macros * quantity`
+- Example: "100g Apple" with quantity 2.0 = nutrition for 200g
+
+### Edge Cases
+
+#### Missing or Incomplete Data
+- If USDA API returns incomplete nutrition data, display "N/A" for missing fields
+- Custom foods require all macro fields (calories, protein, carbs, fat) to be entered
+- Serving size and unit are mandatory for all foods
+
+#### Zero Values
+- Zero is a valid value for macros (e.g., "0g fat" for certain foods)
+- Distinguished from NULL/missing data
+
+#### Fractional Servings
+- All quantity fields support decimals up to 2 decimal places
+- Minimum quantity: 0.01 servings
+- Maximum quantity: 999.99 servings
+
+### Future Enhancements (Not Implemented)
+- Automatic unit conversion (e.g., entering "2 cups" when food is defined in grams)
+- Custom unit conversions for specific food types (e.g., "1 medium apple ≈ 182g")
+- Barcode scanning for automatic serving size detection

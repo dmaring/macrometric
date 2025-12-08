@@ -26,8 +26,8 @@ class MealCategory(BaseModel):
     is_default = Column(Boolean, default=False, nullable=False)
 
     # Relationships
-    # user = relationship("User", back_populates="meal_categories")
-    # diary_entries = relationship("DiaryEntry", back_populates="category")
+    user = relationship("User", back_populates="meal_categories")
+    diary_entries = relationship("DiaryEntry", back_populates="category", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<MealCategory(id={self.id}, name={self.name}, order={self.display_order})>"

@@ -57,6 +57,16 @@ class MessageResponse(BaseModel):
     message: str
 
 
+class PasswordResetRequest(BaseModel):
+    """Password reset request."""
+    email: EmailStr
+
+
+class PasswordResetConfirm(BaseModel):
+    """Password reset confirmation with new password."""
+    password: str
+
+
 @router.post(
     "/register",
     response_model=AuthResponse,
@@ -164,3 +174,46 @@ def get_me(
         email=current_user.email,
         onboarding_completed=current_user.onboarding_completed,
     )
+
+
+@router.post(
+    "/password-reset",
+    response_model=MessageResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+    summary="Request password reset",
+)
+def request_password_reset(
+    data: PasswordResetRequest,
+    db: Session = Depends(get_db),
+):
+    """Request a password reset email.
+
+    Always returns 202 Accepted to prevent email enumeration attacks.
+    In production, would send an email with a reset link.
+    """
+    auth_service = AuthService(db)
+    auth_service.request_password_reset(email=data.email)
+
+    return MessageResponse(
+        message="If the email exists, a password reset link has been sent"
+    )
+
+
+@router.post(
+    "/password-reset/{token}",
+    response_model=MessageResponse,
+    summary="Reset password with token",
+)
+def reset_password(
+    token: str,
+    data: PasswordResetConfirm,
+    db: Session = Depends(get_db),
+):
+    """Reset password using a valid reset token.
+
+    The token is obtained from the password reset email link.
+    """
+    auth_service = AuthService(db)
+    auth_service.reset_password(token=token, new_password=data.password)
+
+    return MessageResponse(message="Password has been reset successfully")

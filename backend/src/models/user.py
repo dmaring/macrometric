@@ -22,8 +22,8 @@ class User(BaseModel):
     daily_goal = relationship("DailyGoal", back_populates="user", uselist=False, cascade="all, delete-orphan")
     custom_foods = relationship("CustomFood", back_populates="user", cascade="all, delete-orphan")
     custom_meals = relationship("CustomMeal", back_populates="user", cascade="all, delete-orphan")
-    # meal_categories = relationship("MealCategory", back_populates="user")
-    # diary_entries = relationship("DiaryEntry", back_populates="user")
+    meal_categories = relationship("MealCategory", back_populates="user", cascade="all, delete-orphan")
+    diary_entries = relationship("DiaryEntry", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email})>"

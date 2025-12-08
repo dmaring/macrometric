@@ -235,6 +235,81 @@ class TestDiaryEntryWorkflow:
             user2_diary = client.get(f"/api/v1/diary/{today}", headers=user2_headers)
             assert user2_diary.json()["totals"]["calories"] == 0
 
+    def test_duplicate_food_entry_allowed(self, client: TestClient, auth_headers: dict):
+        """Users should be able to add the same food multiple times to the same meal."""
+        today = date.today().isoformat()
+
+        # Get categories
+        categories_response = client.get("/api/v1/categories", headers=auth_headers)
+        categories = categories_response.json()
+        category_id = categories[0]["id"]
+
+        # Create a food item
+        food_response = client.post(
+            "/api/v1/foods/custom",
+            headers=auth_headers,
+            json={
+                "name": "Duplicate Test Food",
+                "serving_size": 100,
+                "serving_unit": "g",
+                "calories": 150,
+                "protein_g": 5,
+                "carbs_g": 20,
+                "fat_g": 10
+            }
+        )
+
+        if food_response.status_code == 201:
+            food_id = food_response.json()["id"]
+
+            # Add the same food twice to the same category
+            entry1_response = client.post(
+                f"/api/v1/diary/{today}/entries",
+                headers=auth_headers,
+                json={
+                    "category_id": category_id,
+                    "food_id": food_id,
+                    "quantity": 1.0
+                }
+            )
+            assert entry1_response.status_code == 201
+            entry1 = entry1_response.json()
+
+            entry2_response = client.post(
+                f"/api/v1/diary/{today}/entries",
+                headers=auth_headers,
+                json={
+                    "category_id": category_id,
+                    "food_id": food_id,
+                    "quantity": 2.0  # Different quantity
+                }
+            )
+            assert entry2_response.status_code == 201
+            entry2 = entry2_response.json()
+
+            # Verify both entries are distinct
+            assert entry1["id"] != entry2["id"]
+            assert entry1["quantity"] == 1.0
+            assert entry2["quantity"] == 2.0
+
+            # Check diary shows both entries
+            diary_response = client.get(f"/api/v1/diary/{today}", headers=auth_headers)
+            diary = diary_response.json()
+
+            # Find entries in the category
+            found_entries = []
+            for cat in diary["categories"]:
+                if cat["id"] == category_id:
+                    found_entries = [e for e in cat["entries"] if e["food"]["id"] == food_id]
+
+            assert len(found_entries) == 2, "Both duplicate entries should appear"
+
+            # Totals should reflect both entries: (150 * 1.0) + (150 * 2.0) = 450 calories
+            assert diary["totals"]["calories"] == 450
+            assert diary["totals"]["protein_g"] == 15  # (5 * 1.0) + (5 * 2.0)
+            assert diary["totals"]["carbs_g"] == 60   # (20 * 1.0) + (20 * 2.0)
+            assert diary["totals"]["fat_g"] == 30     # (10 * 1.0) + (10 * 2.0)
+
 
 class TestDiaryEntryValidation:
     """Integration tests for diary entry validation."""

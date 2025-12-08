@@ -8,6 +8,7 @@ from src.api.goals import router as goals_router
 from src.api.foods import router as foods_router
 from src.api.custom_foods import router as custom_foods_router
 from src.api.meals import router as meals_router
+from src.api.users import router as users_router
 
 # Main API router that aggregates all endpoint routers
 router = APIRouter()
@@ -20,3 +21,4 @@ router.include_router(goals_router)
 router.include_router(foods_router)
 router.include_router(custom_foods_router)
 router.include_router(meals_router)
+router.include_router(users_router)

@@ -9,6 +9,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import MealBuilder from '../../components/MealBuilder';
 import CustomMealList from '../../components/CustomMealList';
 import CategoryManager from '../../components/CategoryManager';
@@ -24,9 +25,11 @@ import {
   getCategories,
   MealCategory,
 } from '../../services/categories';
+import api from '../../services/api';
 import './styles.css';
 
 const Settings: React.FC = () => {
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'goals' | 'foods' | 'meals' | 'categories' | 'account'>('meals');
   const [meals, setMeals] = useState<CustomMeal[]>([]);
   const [mealsLoading, setMealsLoading] = useState(false);
@@ -121,6 +124,22 @@ const Settings: React.FC = () => {
       console.error('Error loading categories:', error);
     } finally {
       setCategoriesLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await api.delete('/users/me');
+
+      // Log out and redirect to login
+      await logout();
+      navigate('/login');
+
+      // Show success message
+      alert('Your account has been successfully deleted.');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again or contact support.');
     }
   };
 
@@ -247,7 +266,47 @@ const Settings: React.FC = () => {
         {activeTab === 'account' && (
           <div className="settings__section">
             <h2>Account Settings</h2>
-            <p>Account section - To be implemented</p>
+
+            <div className="settings__account-section">
+              <h3>Password</h3>
+              <p className="settings__description">
+                Reset your password using the password reset flow.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/password-reset')}
+                className="settings__action-btn settings__action-btn--secondary"
+              >
+                Reset Password
+              </button>
+            </div>
+
+            <div className="settings__account-section settings__account-section--danger">
+              <h3>Delete Account</h3>
+              <p className="settings__description">
+                Permanently delete your account and all associated data. This action cannot be undone.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const confirmed = window.confirm(
+                    'Are you absolutely sure you want to delete your account? This will permanently delete:\n\n' +
+                    '• All diary entries\n' +
+                    '• Custom foods and meals\n' +
+                    '• Daily goals\n' +
+                    '• Meal categories\n\n' +
+                    'This action CANNOT be undone.'
+                  );
+
+                  if (confirmed) {
+                    handleDeleteAccount();
+                  }
+                }}
+                className="settings__action-btn settings__action-btn--danger"
+              >
+                Delete Account
+              </button>
+            </div>
           </div>
         )}
       </div>
