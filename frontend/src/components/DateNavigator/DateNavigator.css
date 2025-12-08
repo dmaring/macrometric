@@ -1,0 +1,85 @@
+.date-navigator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.date-navigator:focus {
+  outline: 2px solid #646cff;
+  outline-offset: 2px;
+}
+
+.nav-button {
+  width: 36px;
+  height: 36px;
+  font-size: 1.25rem;
+  color: #888;
+  background: #242424;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-button:hover {
+  background: #333;
+  color: white;
+}
+
+.date-display {
+  flex: 1;
+  text-align: center;
+}
+
+.date-label {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.date-full {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.125rem;
+}
+
+.today-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #646cff;
+  background: transparent;
+  border: 1px solid #646cff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.today-button:hover:not(:disabled) {
+  background: rgba(100, 108, 255, 0.1);
+}
+
+.today-button:disabled {
+  color: #444;
+  border-color: #333;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .date-navigator {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .today-button {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
