@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: macrometric-e2e-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: macrometric_test
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # No volume - fresh database each run
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: macrometric-e2e-backend
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/macrometric_test
+      - FRONTEND_URL=http://localhost:3001
+      - JWT_SECRET=test-secret-key-for-e2e-testing
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: macrometric-e2e-frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8001/api/v1
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.49.0-jammy
+    container_name: macrometric-e2e-playwright
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - ./frontend/node_modules:/app/node_modules
+    environment:
+      - CI=true
+      - PLAYWRIGHT_BASE_URL=http://frontend:3000
+    depends_on:
+      - frontend
+    command: npx playwright test --config=playwright.config.ts
+    network_mode: "host"
