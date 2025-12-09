@@ -4,7 +4,6 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import './Register.css';
 
 interface FormErrors {
   email?: string;
@@ -94,15 +93,26 @@ export default function Register() {
     }
   };
 
-  return (
-    <div className="register-page">
-      <div className="register-container">
-        <h1>Create Account</h1>
-        <p className="subtitle">Join Macrometric today</p>
+  const strengthColors = {
+    weak: 'text-error bg-error/10',
+    medium: 'text-warning bg-warning/10',
+    strong: 'text-success bg-success/10',
+  };
 
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+  return (
+    <div className="flex justify-center items-center min-h-screen p-4 bg-surface">
+      <div className="w-full max-w-md p-8 bg-surface-secondary rounded-lg shadow-lg border border-border">
+        <h1 className="text-3xl font-bold text-center mb-2 text-content">Create Account</h1>
+        <p className="text-center text-content-secondary mb-6">Join Macrometric today</p>
+
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block mb-2 font-medium text-content"
+            >
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -112,16 +122,26 @@ export default function Register() {
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? 'email-error' : undefined}
               disabled={isSubmitting}
+              className="w-full px-3 py-2 text-base border rounded-md bg-surface-tertiary border-border text-content transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed aria-[invalid=true]:border-error"
             />
             {errors.email && (
-              <span id="email-error" className="error" role="alert">
+              <span
+                id="email-error"
+                className="block mt-1 text-sm text-error"
+                role="alert"
+              >
                 {errors.email}
               </span>
             )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div>
+            <label
+              htmlFor="password"
+              className="block mb-2 font-medium text-content"
+            >
+              Password
+            </label>
             <input
               type="password"
               id="password"
@@ -131,23 +151,33 @@ export default function Register() {
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? 'password-error' : undefined}
               disabled={isSubmitting}
+              className="w-full px-3 py-2 text-base border rounded-md bg-surface-tertiary border-border text-content transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed aria-[invalid=true]:border-error"
             />
             {password && (
-              <div className="password-strength" data-testid="password-strength">
-                <span className={`strength-indicator ${passwordStrength}`}>
+              <div className="mt-2" data-testid="password-strength">
+                <span className={`inline-block text-sm px-2 py-1 rounded ${strengthColors[passwordStrength]}`}>
                   Password strength: {passwordStrength}
                 </span>
               </div>
             )}
             {errors.password && (
-              <span id="password-error" className="error" role="alert">
+              <span
+                id="password-error"
+                className="block mt-1 text-sm text-error"
+                role="alert"
+              >
                 {errors.password}
               </span>
             )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block mb-2 font-medium text-content"
+            >
+              Confirm Password
+            </label>
             <input
               type="password"
               id="confirmPassword"
@@ -157,27 +187,44 @@ export default function Register() {
               aria-invalid={!!errors.confirmPassword}
               aria-describedby={errors.confirmPassword ? 'confirm-error' : undefined}
               disabled={isSubmitting}
+              className="w-full px-3 py-2 text-base border rounded-md bg-surface-tertiary border-border text-content transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed aria-[invalid=true]:border-error"
             />
             {errors.confirmPassword && (
-              <span id="confirm-error" className="error" role="alert">
+              <span
+                id="confirm-error"
+                className="block mt-1 text-sm text-error"
+                role="alert"
+              >
                 {errors.confirmPassword}
               </span>
             )}
           </div>
 
           {serverError && (
-            <div className="server-error" role="alert">
+            <div
+              className="p-3 bg-error/10 border border-error rounded-md text-error text-center text-sm"
+              role="alert"
+            >
               {serverError}
             </div>
           )}
 
-          <button type="submit" disabled={isSubmitting}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full px-4 py-3 text-base font-semibold text-white bg-primary rounded-md transition-colors duration-200 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
+          >
             {isSubmitting ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
 
-        <div className="links">
-          <Link to="/login">Already have an account? Log in</Link>
+        <div className="mt-6 text-center text-sm">
+          <Link
+            to="/login"
+            className="text-primary hover:underline transition-all duration-150"
+          >
+            Already have an account? Log in
+          </Link>
         </div>
       </div>
     </div>

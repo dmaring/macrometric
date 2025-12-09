@@ -5,7 +5,6 @@
  * Auto-dismisses after a timeout or can be manually dismissed.
  */
 import React, { useEffect, useState } from 'react';
-import './styles.css';
 
 export interface ErrorNotificationProps {
   message: string;
@@ -55,16 +54,18 @@ const ErrorNotification: React.FC<ErrorNotificationProps> = ({
     }
   };
 
+  const bgColor = type === 'error' ? 'bg-error/90' : type === 'warning' ? 'bg-warning/90' : 'bg-primary/90';
+
   return (
-    <div className={`error-notification error-notification--${type}`} role="alert">
-      <div className="error-notification__content">
-        <span className="error-notification__icon">{getIcon()}</span>
-        <span className="error-notification__message">{message}</span>
+    <div className={`flex items-center justify-between gap-4 px-4 py-3 ${bgColor} text-white rounded-lg shadow-lg min-h-[56px]`} role="alert">
+      <div className="flex items-center gap-3">
+        <span className="text-xl">{getIcon()}</span>
+        <span className="text-sm font-medium">{message}</span>
       </div>
       <button
         type="button"
         onClick={handleDismiss}
-        className="error-notification__close"
+        className="text-white hover:text-white/80 text-xl leading-none bg-transparent border-none cursor-pointer p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
         aria-label="Dismiss notification"
       >
         ✕
@@ -88,7 +89,7 @@ export const NotificationContainer: React.FC<NotificationContainerProps> = ({
   }
 
   return (
-    <div className="error-notification-container">
+    <div className="fixed top-4 right-4 z-[2000] flex flex-col gap-3 max-w-md">
       {notifications.map((notification) => (
         <ErrorNotification
           key={notification.id}

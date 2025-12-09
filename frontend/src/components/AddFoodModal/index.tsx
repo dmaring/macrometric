@@ -7,7 +7,6 @@ import { useState, useEffect, useRef } from 'react';
 import FoodSearch from '../FoodSearch';
 import { Food } from '../../services/foodSearch';
 import { createCustomFood } from '../../services/customFoods';
-import './AddFoodModal.css';
 
 interface AddFoodModalProps {
   isOpen: boolean;
@@ -201,7 +200,7 @@ export default function AddFoodModal({
 
   return (
     <div
-      className="modal-overlay"
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-[1000] p-4"
       onClick={onClose}
       onKeyDown={handleKeyDown}
       role="dialog"
@@ -210,14 +209,14 @@ export default function AddFoodModal({
       data-testid="add-food-modal"
     >
       <div
-        className="add-food-modal"
+        className="bg-surface-secondary rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         role="document"
       >
-        <div className="modal-header">
-          <h2 id="modal-title">Add Food to {categoryName}</h2>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <h2 id="modal-title" className="m-0 text-xl text-content font-semibold">Add Food to {categoryName}</h2>
           <button
-            className="close-button"
+            className="w-8 h-8 min-w-[44px] min-h-[44px] text-2xl text-content-secondary bg-transparent border-none rounded cursor-pointer flex items-center justify-center transition-colors duration-200 hover:text-content hover:bg-surface-tertiary"
             onClick={onClose}
             aria-label="Close modal"
           >
@@ -225,19 +224,19 @@ export default function AddFoodModal({
           </button>
         </div>
 
-        <form className="modal-content" onSubmit={handleSubmit}>
-          <div className="search-section">
-            <h3>Search Foods</h3>
+        <form className="px-5 py-5" onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <h3 className="m-0 mb-3 text-base font-semibold text-content-secondary">Search Foods</h3>
             <FoodSearch onSelect={handleFoodSelect} />
           </div>
 
-          <div className="divider">
-            <span>OR ENTER MANUALLY</span>
+          <div className="flex items-center text-center my-6 before:content-[''] before:flex-1 before:border-b before:border-border after:content-[''] after:flex-1 after:border-b after:border-border">
+            <span className="px-4 text-xs text-content-tertiary font-medium">OR ENTER MANUALLY</span>
           </div>
 
-          <div className="food-form">
-            <div className="form-group">
-              <label htmlFor="food-name">Food Name *</label>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="food-name" className="text-sm font-medium text-content-secondary">Food Name *</label>
               <input
                 id="food-name"
                 ref={nameInputRef}
@@ -247,16 +246,17 @@ export default function AddFoodModal({
                 placeholder="e.g., Chicken Breast"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
+                className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
               />
               {errors.name && (
-                <span id="name-error" className="form-error">
+                <span id="name-error" className="text-error text-xs mt-1">
                   {errors.name}
                 </span>
               )}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="food-brand">Brand (optional)</label>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="food-brand" className="text-sm font-medium text-content-secondary">Brand (optional)</label>
               <input
                 id="food-brand"
                 type="text"
@@ -265,12 +265,13 @@ export default function AddFoodModal({
                   handleChange('brand', e.target.value || null)
                 }
                 placeholder="e.g., Tyson"
+                className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
               />
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="serving-size">Serving Size *</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="serving-size" className="text-sm font-medium text-content-secondary">Serving Size *</label>
                 <input
                   id="serving-size"
                   type="number"
@@ -284,16 +285,17 @@ export default function AddFoodModal({
                   aria-describedby={
                     errors.serving_size ? 'serving-size-error' : undefined
                   }
+                  className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 min-h-[44px]"
                 />
                 {errors.serving_size && (
-                  <span id="serving-size-error" className="form-error">
+                  <span id="serving-size-error" className="text-error text-xs mt-1">
                     {errors.serving_size}
                   </span>
                 )}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="serving-unit">Serving Unit *</label>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="serving-unit" className="text-sm font-medium text-content-secondary">Serving Unit *</label>
                 <input
                   id="serving-unit"
                   type="text"
@@ -304,18 +306,19 @@ export default function AddFoodModal({
                   aria-describedby={
                     errors.serving_unit ? 'serving-unit-error' : undefined
                   }
+                  className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
                 />
                 {errors.serving_unit && (
-                  <span id="serving-unit-error" className="form-error">
+                  <span id="serving-unit-error" className="text-error text-xs mt-1">
                     {errors.serving_unit}
                   </span>
                 )}
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="quantity">Quantity *</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="quantity" className="text-sm font-medium text-content-secondary">Quantity *</label>
                 <input
                   id="quantity"
                   type="number"
@@ -327,20 +330,21 @@ export default function AddFoodModal({
                   }
                   aria-invalid={!!errors.quantity}
                   aria-describedby={errors.quantity ? 'quantity-error' : undefined}
+                  className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 min-h-[44px]"
                 />
                 {errors.quantity && (
-                  <span id="quantity-error" className="form-error">
+                  <span id="quantity-error" className="text-error text-xs mt-1">
                     {errors.quantity}
                   </span>
                 )}
               </div>
             </div>
 
-            <div className="macros-section">
-              <h3>Nutrition per Serving</h3>
-              <div className="macros-grid">
-                <div className="form-group">
-                  <label htmlFor="calories">Calories *</label>
+            <div className="mt-2">
+              <h3 className="m-0 mb-3 text-base font-semibold text-content">Nutrition per Serving</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="calories" className="text-sm font-medium text-content-secondary">Calories *</label>
                   <input
                     id="calories"
                     type="number"
@@ -354,16 +358,17 @@ export default function AddFoodModal({
                     aria-describedby={
                       errors.calories ? 'calories-error' : undefined
                     }
+                    className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 min-h-[44px]"
                   />
                   {errors.calories && (
-                    <span id="calories-error" className="form-error">
+                    <span id="calories-error" className="text-error text-xs mt-1">
                       {errors.calories}
                     </span>
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="protein">Protein (g) *</label>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="protein" className="text-sm font-medium text-content-secondary">Protein (g) *</label>
                   <input
                     id="protein"
                     type="number"
@@ -377,16 +382,17 @@ export default function AddFoodModal({
                     aria-describedby={
                       errors.protein_g ? 'protein-error' : undefined
                     }
+                    className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 min-h-[44px]"
                   />
                   {errors.protein_g && (
-                    <span id="protein-error" className="form-error">
+                    <span id="protein-error" className="text-error text-xs mt-1">
                       {errors.protein_g}
                     </span>
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="carbs">Carbs (g) *</label>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="carbs" className="text-sm font-medium text-content-secondary">Carbs (g) *</label>
                   <input
                     id="carbs"
                     type="number"
@@ -398,16 +404,17 @@ export default function AddFoodModal({
                     }
                     aria-invalid={!!errors.carbs_g}
                     aria-describedby={errors.carbs_g ? 'carbs-error' : undefined}
+                    className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 min-h-[44px]"
                   />
                   {errors.carbs_g && (
-                    <span id="carbs-error" className="form-error">
+                    <span id="carbs-error" className="text-error text-xs mt-1">
                       {errors.carbs_g}
                     </span>
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="fat">Fat (g) *</label>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="fat" className="text-sm font-medium text-content-secondary">Fat (g) *</label>
                   <input
                     id="fat"
                     type="number"
@@ -419,38 +426,40 @@ export default function AddFoodModal({
                     }
                     aria-invalid={!!errors.fat_g}
                     aria-describedby={errors.fat_g ? 'fat-error' : undefined}
+                    className="px-3 py-3 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 min-h-[44px]"
                   />
                   {errors.fat_g && (
-                    <span id="fat-error" className="form-error">
+                    <span id="fat-error" className="text-error text-xs mt-1">
                       {errors.fat_g}
                     </span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="form-group checkbox-group">
-              <label>
+            <div className="flex flex-col gap-1.5 mt-4 pt-4 border-t border-border">
+              <label className="flex items-center gap-2 cursor-pointer text-sm text-content-secondary">
                 <input
                   type="checkbox"
                   checked={saveAsCustom}
                   onChange={(e) => setSaveAsCustom(e.target.checked)}
+                  className="w-auto cursor-pointer min-w-[44px] min-h-[44px]"
                 />
-                <span>Save as custom food for future use</span>
+                <span className="select-none">Save as custom food for future use</span>
               </label>
             </div>
           </div>
 
-          <div className="modal-footer">
+          <div className="flex justify-end gap-3 px-5 py-4 border-t border-border">
             <button
               type="button"
-              className="cancel-button"
+              className="px-5 py-3 text-base font-medium text-content-secondary bg-transparent border border-border rounded-md cursor-pointer transition-all duration-200 hover:text-content hover:bg-surface-tertiary min-h-[44px]"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="submit-button"
+              className="px-5 py-3 text-base font-medium text-white bg-primary border-none rounded-md cursor-pointer transition-colors duration-200 hover:bg-primary-hover disabled:bg-border disabled:text-content-tertiary disabled:cursor-not-allowed min-h-[44px]"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Adding...' : 'Add Food'}

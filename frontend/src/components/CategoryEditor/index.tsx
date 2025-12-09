@@ -6,7 +6,6 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { MealCategory } from '../../services/categories';
-import './styles.css';
 
 interface CategoryEditorProps {
   mode: 'create' | 'edit';
@@ -100,20 +99,22 @@ const CategoryEditor: React.FC<CategoryEditorProps> = ({
   };
 
   const content = (
-    <form onSubmit={handleSubmit} className="category-editor__form">
-      <div className="category-editor__header">
-        <h2 className="category-editor__title">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-2xl font-semibold text-content m-0">
           {mode === 'create' ? 'Create Category' : 'Edit Category'}
         </h2>
         {category?.is_default && (
-          <span className="category-editor__badge">Default Category</span>
+          <span className="inline-block px-2 py-1 bg-primary/10 text-primary rounded text-xs font-semibold uppercase">
+            Default Category
+          </span>
         )}
       </div>
 
-      <div className="category-editor__field">
+      <div className="flex flex-col gap-2">
         <label
           htmlFor="category-name"
-          className="category-editor__label"
+          className="font-semibold text-content-secondary text-sm"
         >
           Category Name
         </label>
@@ -124,7 +125,11 @@ const CategoryEditor: React.FC<CategoryEditorProps> = ({
           value={name}
           onChange={handleNameChange}
           onKeyPress={handleKeyPress}
-          className={`category-editor__input ${error ? 'category-editor__input--error' : ''}`}
+          className={`w-full px-3 py-2.5 border rounded transition-all text-base ${
+            error
+              ? 'border-error focus:border-error focus:ring-2 focus:ring-error/10'
+              : 'border-border bg-surface-tertiary focus:border-primary focus:ring-2 focus:ring-primary/10'
+          } focus:outline-none disabled:bg-surface-secondary disabled:cursor-not-allowed`}
           aria-label="Category name"
           aria-invalid={!!error}
           aria-describedby={error ? 'category-name-error' : undefined}
@@ -134,7 +139,7 @@ const CategoryEditor: React.FC<CategoryEditorProps> = ({
         {error && (
           <p
             id="category-name-error"
-            className="category-editor__error"
+            className="text-error text-sm m-0"
             role="alert"
           >
             {error}
@@ -142,18 +147,18 @@ const CategoryEditor: React.FC<CategoryEditorProps> = ({
         )}
       </div>
 
-      <div className="category-editor__actions">
+      <div className="flex gap-3 justify-end mt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="category-editor__button category-editor__button--cancel"
+          className="px-5 py-2.5 bg-surface-secondary text-content-secondary rounded font-semibold text-base cursor-pointer transition-all duration-200 border-none hover:bg-surface-tertiary disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
           disabled={isSubmitting}
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="category-editor__button category-editor__button--save"
+          className="px-5 py-2.5 bg-primary text-white rounded font-semibold text-base cursor-pointer transition-all duration-200 border-none hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create' : 'Save'}
@@ -163,13 +168,13 @@ const CategoryEditor: React.FC<CategoryEditorProps> = ({
   );
 
   if (!isModal) {
-    return <div className="category-editor">{content}</div>;
+    return <div className="bg-surface rounded-lg p-6 min-w-[400px] max-w-[500px] shadow-md">{content}</div>;
   }
 
   return (
-    <div className="category-editor__overlay" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4" onClick={onCancel}>
       <div
-        className="category-editor"
+        className="bg-surface rounded-lg p-6 min-w-[90vw] sm:min-w-[400px] max-w-[500px] shadow-lg"
         role="dialog"
         aria-labelledby="category-editor-title"
         aria-modal="true"

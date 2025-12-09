@@ -12,10 +12,9 @@ import MacroDisplay from '../../components/MacroDisplay';
 import MealCategory from '../../components/MealCategory';
 import AddFoodModal, { FoodData } from '../../components/AddFoodModal';
 import MealCard from '../../components/MealCard';
+import { DiaryPageSkeleton } from '../../components/Skeleton';
 import { getCustomMeals, CustomMeal } from '../../services/meals';
 import { addMealToDiary } from '../../services/diary';
-import './Diary.css';
-
 interface SelectedCategory {
   id: string;
   name: string;
@@ -145,39 +144,41 @@ export default function DiaryPage() {
   const categories = diary?.categories || [];
 
   return (
-    <div className="diary-page" data-testid="diary-page">
-      <header className="diary-header">
-        <h1>MacroMetric</h1>
-        <div className="diary-header__actions">
+    <div className="min-h-screen bg-surface transition-colors duration-200" data-testid="diary-page">
+      <header className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between px-4 sm:px-6 py-4 bg-surface-secondary border-b border-border gap-4 sm:gap-0">
+        <h1 className="text-2xl font-semibold text-content text-center sm:text-left m-0">MacroMetric</h1>
+        <div className="flex gap-3">
           <button
-            className="settings-button"
+            className="px-4 py-2 text-sm font-medium text-content-secondary bg-transparent border border-border rounded transition-all duration-200 hover:text-content hover:bg-surface-tertiary cursor-pointer min-h-[44px]"
             onClick={() => navigate('/settings')}
           >
             Settings
           </button>
-          <button className="logout-button" onClick={handleLogout}>
+          <button
+            className="px-4 py-2 text-sm font-medium text-content-secondary bg-transparent border border-border rounded transition-all duration-200 hover:text-content hover:bg-surface-tertiary cursor-pointer min-h-[44px]"
+            onClick={handleLogout}
+          >
             Logout
           </button>
         </div>
       </header>
 
-      <main className="diary-content">
-        <DateNavigator date={selectedDate} onDateChange={handleDateChange} />
-
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-6">
         {loading ? (
-          <div className="loading-state" data-testid="diary-loading">
-            <div className="loading-spinner" />
-            <p>Loading diary...</p>
-          </div>
+          <DiaryPageSkeleton />
         ) : error ? (
-          <div className="error-state" data-testid="diary-error">
-            <p>Failed to load diary</p>
-            <button className="retry-button" onClick={refresh}>
+          <div className="flex flex-col items-center justify-center py-12 gap-4 text-error" data-testid="diary-error">
+            <p className="m-0">Failed to load diary</p>
+            <button
+              className="px-4 py-2 text-sm text-white bg-primary rounded cursor-pointer border-none transition-colors duration-200 hover:bg-primary-hover min-h-[44px]"
+              onClick={refresh}
+            >
               Try Again
             </button>
           </div>
         ) : diary ? (
           <>
+            <DateNavigator date={selectedDate} onDateChange={handleDateChange} />
             <MacroDisplay
               calories={diary.totals.calories}
               protein={diary.totals.protein_g}
@@ -191,7 +192,7 @@ export default function DiaryPage() {
               } : undefined}
             />
 
-            <section className="categories-section">
+            <section className="flex flex-col gap-4">
               {categories.length > 0 ? (
                 categories.map((category) => (
                   <MealCategory
@@ -206,8 +207,8 @@ export default function DiaryPage() {
                   />
                 ))
               ) : (
-                <div className="empty-diary">
-                  <p>No meal categories available. Add categories in settings.</p>
+                <div className="flex flex-col items-center justify-center py-12 text-center text-content-tertiary">
+                  <p className="m-0 text-base">No meal categories available. Add categories in settings.</p>
                 </div>
               )}
             </section>
@@ -226,37 +227,37 @@ export default function DiaryPage() {
       )}
 
       {showMealSelector && (
-        <div className="meal-selector-modal">
-          <div className="meal-selector-modal__overlay" onClick={handleCloseMealSelector} />
-          <div className="meal-selector-modal__content">
-            <div className="meal-selector-modal__header">
-              <h2>Select a Meal</h2>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/75" onClick={handleCloseMealSelector} />
+          <div className="relative bg-surface-secondary border border-border rounded-lg w-full max-w-[600px] max-h-[80vh] flex flex-col z-[1001]">
+            <div className="flex justify-between items-center px-6 py-6 border-b border-border">
+              <h2 className="m-0 text-2xl text-content font-semibold">Select a Meal</h2>
               <button
                 type="button"
                 onClick={handleCloseMealSelector}
-                className="meal-selector-modal__close"
+                className="p-2 bg-transparent border-none text-content-secondary text-2xl cursor-pointer transition-colors duration-200 hover:text-content min-h-[44px] min-w-[44px]"
                 aria-label="Close"
               >
                 ✕
               </button>
             </div>
-            <div className="meal-selector-modal__body">
+            <div className="px-6 py-6 overflow-y-auto">
               {customMeals.length === 0 ? (
-                <div className="meal-selector-modal__empty">
-                  <p>No custom meals yet.</p>
+                <div className="text-center py-12 px-4 text-content-secondary">
+                  <p className="m-0 mb-6 text-lg">No custom meals yet.</p>
                   <button
                     type="button"
                     onClick={() => {
                       handleCloseMealSelector();
                       navigate('/settings');
                     }}
-                    className="meal-selector-modal__create-btn"
+                    className="px-6 py-3 bg-success text-white border-none rounded cursor-pointer text-base font-semibold transition-colors duration-200 hover:bg-success/80 min-h-[44px]"
                   >
                     Create Your First Meal
                   </button>
                 </div>
               ) : (
-                <div className="meal-selector-modal__meals">
+                <div className="flex flex-col gap-4">
                   {customMeals.map((meal) => (
                     <MealCard
                       key={meal.id}

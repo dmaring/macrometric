@@ -5,7 +5,6 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { searchFoods, Food } from '../../services/foodSearch';
-import './FoodSearch.css';
 
 interface FoodSearchProps {
   onSelect: (food: Food) => void;
@@ -66,11 +65,11 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
   };
 
   return (
-    <div className="food-search" data-testid="food-search">
-      <div className="search-input-wrapper">
+    <div className="w-full relative" data-testid="food-search">
+      <div className="mb-2">
         <input
           type="text"
-          className="search-input"
+          className="w-full px-4 py-3 text-base border-2 border-border rounded-lg transition-colors duration-200 focus:outline-none focus:border-primary bg-surface text-content placeholder:text-content-tertiary min-h-[44px]"
           placeholder="Search for foods..."
           value={query}
           onChange={handleQueryChange}
@@ -79,50 +78,50 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
       </div>
 
       {isLoading && (
-        <div className="search-status">Searching...</div>
+        <div className="p-4 text-center text-content-secondary text-sm">Searching...</div>
       )}
 
       {error && (
-        <div className="search-error">{error}</div>
+        <div className="p-4 bg-error/10 border border-error/30 rounded-md text-error text-sm">{error}</div>
       )}
 
       {!isLoading && !error && query.length >= 2 && results.length === 0 && (
-        <div className="search-status">No foods found. Try a different search term.</div>
+        <div className="p-4 text-center text-content-secondary text-sm">No foods found. Try a different search term.</div>
       )}
 
       {results.length > 0 && (
-        <div className="search-results">
+        <div className="max-h-96 overflow-y-auto border border-border rounded-lg bg-surface">
           {results.map((food) => (
             <button
               key={food.id}
-              className="search-result-item"
+              className="w-full p-4 text-left border-none border-b border-border bg-surface cursor-pointer transition-colors duration-200 hover:bg-surface-secondary last:border-b-0 min-h-[44px]"
               onClick={() => handleSelectFood(food)}
               type="button"
             >
-              <div className="result-name">{food.name}</div>
-              <div className="result-macros">
-                <span className="macro-item">
+              <div className="font-semibold text-content mb-2">{food.name}</div>
+              <div className="flex flex-wrap gap-4 mb-1">
+                <span className="text-sm text-content-secondary">
                   {food.calories !== null && food.calories !== undefined
                     ? `${food.calories} cal`
                     : 'Cal: N/A'}
                 </span>
-                <span className="macro-item">
+                <span className="text-sm text-content-secondary">
                   {food.protein_g !== null && food.protein_g !== undefined
                     ? `${food.protein_g}g protein`
                     : 'Protein: N/A'}
                 </span>
-                <span className="macro-item">
+                <span className="text-sm text-content-secondary">
                   {food.carbs_g !== null && food.carbs_g !== undefined
                     ? `${food.carbs_g}g carbs`
                     : 'Carbs: N/A'}
                 </span>
-                <span className="macro-item">
+                <span className="text-sm text-content-secondary">
                   {food.fat_g !== null && food.fat_g !== undefined
                     ? `${food.fat_g}g fat`
                     : 'Fat: N/A'}
                 </span>
               </div>
-              <div className="result-serving">
+              <div className="text-xs text-content-tertiary">
                 {food.serving_size && food.serving_unit
                   ? `Per ${food.serving_size}${food.serving_unit}`
                   : 'Serving size: N/A'}

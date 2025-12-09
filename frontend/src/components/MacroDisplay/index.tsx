@@ -3,7 +3,6 @@
  *
  * Shows daily macro totals with optional goal progress.
  */
-import './MacroDisplay.css';
 
 interface MacroGoals {
   calories: number;
@@ -43,17 +42,17 @@ function MacroItem({ label, value, goal, unit = 'g', testId }: MacroItemProps) {
   const isOver = percentage !== undefined && percentage > 100;
 
   return (
-    <div className="macro-item">
-      <span className="macro-label">{label}</span>
-      <span className="macro-value">
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+      <span className="text-xs text-content-secondary uppercase tracking-wide">{label}</span>
+      <span className="text-lg font-medium text-content">
         {formatNumber(value)}
-        {goal && <span className="macro-goal"> / {formatNumber(goal)}</span>}
-        {unit && <span className="macro-unit">{unit}</span>}
+        {goal && <span className="text-content-tertiary font-normal"> / {formatNumber(goal)}</span>}
+        {unit && <span className="text-content-secondary text-sm ml-0.5">{unit}</span>}
       </span>
       {goal && (
         <>
           <div
-            className="progress-bar"
+            className="h-1 bg-surface-tertiary rounded-full overflow-hidden"
             role="progressbar"
             aria-valuenow={value}
             aria-valuemax={goal}
@@ -61,11 +60,11 @@ function MacroItem({ label, value, goal, unit = 'g', testId }: MacroItemProps) {
             data-testid={testId}
           >
             <div
-              className={`progress-fill ${isOver ? 'over' : ''}`}
+              className={`h-full transition-all duration-300 ease-in-out ${isOver ? 'bg-error' : 'bg-primary'}`}
               style={{ width: `${Math.min(percentage!, 100)}%` }}
             />
           </div>
-          <span className={`percentage ${isOver ? 'over' : ''}`}>
+          <span className={`text-xs ${isOver ? 'text-error' : 'text-content-secondary'}`}>
             {percentage}%
           </span>
         </>
@@ -84,21 +83,43 @@ export default function MacroDisplay({
 }: MacroDisplayProps) {
   return (
     <div
-      className={`macro-display ${compact ? 'compact' : ''}`}
+      className={`bg-surface-secondary rounded-lg border border-border ${compact ? 'p-2' : 'p-4'}`}
       data-testid="macro-display"
       aria-label="Daily nutrition summary"
     >
-      <div className="calories-section">
-        <MacroItem
-          label="Calories"
-          value={calories}
-          goal={goals?.calories}
-          unit=""
-          testId="calories-progress"
-        />
+      <div className={`mb-4 pb-4 border-b border-border ${compact ? 'mb-2 pb-2' : ''}`}>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-content-secondary uppercase tracking-wide">Calories</span>
+          <span className="text-2xl font-semibold text-content">
+            {formatNumber(calories)}
+            {goals?.calories && <span className="text-content-tertiary font-normal text-xl"> / {formatNumber(goals.calories)}</span>}
+          </span>
+          {goals?.calories && (
+            <>
+              <div
+                className="h-1 bg-surface-tertiary rounded-full overflow-hidden"
+                role="progressbar"
+                aria-valuenow={calories}
+                aria-valuemax={goals.calories}
+                aria-label="Calories progress"
+                data-testid="calories-progress"
+              >
+                <div
+                  className={`h-full transition-all duration-300 ease-in-out ${
+                    getPercentage(calories, goals.calories) > 100 ? 'bg-error' : 'bg-primary'
+                  }`}
+                  style={{ width: `${Math.min(getPercentage(calories, goals.calories), 100)}%` }}
+                />
+              </div>
+              <span className={`text-xs ${getPercentage(calories, goals.calories) > 100 ? 'text-error' : 'text-content-secondary'}`}>
+                {getPercentage(calories, goals.calories)}%
+              </span>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className="macros-section">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-4">
         <MacroItem
           label="Protein"
           value={protein}

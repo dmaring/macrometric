@@ -10,6 +10,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../contexts/ThemeContext';
 import MealBuilder from '../../components/MealBuilder';
 import CustomMealList from '../../components/CustomMealList';
 import CategoryManager from '../../components/CategoryManager';
@@ -26,10 +27,10 @@ import {
   MealCategory,
 } from '../../services/categories';
 import api from '../../services/api';
-import './styles.css';
 
 const Settings: React.FC = () => {
   const { logout } = useAuth();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'goals' | 'foods' | 'meals' | 'categories' | 'account'>('meals');
   const [meals, setMeals] = useState<CustomMeal[]>([]);
   const [mealsLoading, setMealsLoading] = useState(false);
@@ -144,80 +145,80 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="settings">
-      <div className="settings__header">
-        <h1>Settings</h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 bg-surface min-h-screen transition-colors duration-200">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-8 gap-4">
+        <h1 className="m-0 text-3xl text-content font-bold">Settings</h1>
         <button
           type="button"
           onClick={() => navigate('/diary')}
-          className="settings__back-btn"
+          className="px-6 py-3 bg-content-secondary text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-content-tertiary min-h-[44px]"
         >
           Back to Diary
         </button>
       </div>
 
-      <div className="settings__tabs">
+      <div className="flex gap-2 border-b-2 border-border mb-8 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
         <button
           type="button"
-          className={`settings__tab ${activeTab === 'goals' ? 'settings__tab--active' : ''}`}
+          className={`px-6 py-3 bg-transparent border-none border-b-2 ${activeTab === 'goals' ? 'border-primary text-primary' : 'border-transparent text-content-secondary'} cursor-pointer text-base font-medium transition-all duration-200 hover:text-content -mb-0.5 min-h-[44px] whitespace-nowrap`}
           onClick={() => setActiveTab('goals')}
         >
           Goals
         </button>
         <button
           type="button"
-          className={`settings__tab ${activeTab === 'foods' ? 'settings__tab--active' : ''}`}
+          className={`px-6 py-3 bg-transparent border-none border-b-2 ${activeTab === 'foods' ? 'border-primary text-primary' : 'border-transparent text-content-secondary'} cursor-pointer text-base font-medium transition-all duration-200 hover:text-content -mb-0.5 min-h-[44px] whitespace-nowrap`}
           onClick={() => setActiveTab('foods')}
         >
           Custom Foods
         </button>
         <button
           type="button"
-          className={`settings__tab ${activeTab === 'meals' ? 'settings__tab--active' : ''}`}
+          className={`px-6 py-3 bg-transparent border-none border-b-2 ${activeTab === 'meals' ? 'border-primary text-primary' : 'border-transparent text-content-secondary'} cursor-pointer text-base font-medium transition-all duration-200 hover:text-content -mb-0.5 min-h-[44px] whitespace-nowrap`}
           onClick={() => setActiveTab('meals')}
         >
           Custom Meals
         </button>
         <button
           type="button"
-          className={`settings__tab ${activeTab === 'categories' ? 'settings__tab--active' : ''}`}
+          className={`px-6 py-3 bg-transparent border-none border-b-2 ${activeTab === 'categories' ? 'border-primary text-primary' : 'border-transparent text-content-secondary'} cursor-pointer text-base font-medium transition-all duration-200 hover:text-content -mb-0.5 min-h-[44px] whitespace-nowrap`}
           onClick={() => setActiveTab('categories')}
         >
           Categories
         </button>
         <button
           type="button"
-          className={`settings__tab ${activeTab === 'account' ? 'settings__tab--active' : ''}`}
+          className={`px-6 py-3 bg-transparent border-none border-b-2 ${activeTab === 'account' ? 'border-primary text-primary' : 'border-transparent text-content-secondary'} cursor-pointer text-base font-medium transition-all duration-200 hover:text-content -mb-0.5 min-h-[44px] whitespace-nowrap`}
           onClick={() => setActiveTab('account')}
         >
           Account
         </button>
       </div>
 
-      <div className="settings__content">
+      <div className="min-h-96">
         {activeTab === 'goals' && (
-          <div className="settings__section">
-            <h2>Daily Goals</h2>
-            <p>Goals section - To be implemented</p>
+          <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
+            <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Daily Goals</h2>
+            <p className="text-content-secondary">Goals section - To be implemented</p>
           </div>
         )}
 
         {activeTab === 'foods' && (
-          <div className="settings__section">
-            <h2>Custom Foods</h2>
-            <p>Custom foods section - To be implemented</p>
+          <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
+            <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Custom Foods</h2>
+            <p className="text-content-secondary">Custom foods section - To be implemented</p>
           </div>
         )}
 
         {activeTab === 'meals' && (
-          <div className="settings__section">
-            <div className="settings__section-header">
-              <h2>Custom Meals</h2>
+          <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h2 className="m-0 text-2xl text-content font-semibold">Custom Meals</h2>
               {!showMealBuilder && (
                 <button
                   type="button"
                   onClick={handleCreateMeal}
-                  className="settings__create-btn"
+                  className="px-6 py-3 bg-success text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-success/80 min-h-[44px]"
                 >
                   Create New Meal
                 </button>
@@ -225,7 +226,7 @@ const Settings: React.FC = () => {
             </div>
 
             {showMealBuilder ? (
-              <div className="settings__meal-builder">
+              <div className="mt-6">
                 <MealBuilder
                   meal={editingMeal}
                   onSave={handleSaveMeal}
@@ -245,15 +246,15 @@ const Settings: React.FC = () => {
         )}
 
         {activeTab === 'categories' && (
-          <div className="settings__section">
-            <h2>Meal Categories</h2>
-            <p className="settings__description">
+          <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
+            <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Meal Categories</h2>
+            <p className="m-0 mb-4 text-content-secondary text-sm leading-relaxed">
               Manage your meal categories. Drag and drop to reorder, edit names, or add new categories.
             </p>
             {categoriesLoading ? (
-              <p>Loading categories...</p>
+              <p className="text-content-secondary">Loading categories...</p>
             ) : categoriesError ? (
-              <p className="settings__error">{categoriesError}</p>
+              <p className="p-4 bg-error/10 border border-error/30 rounded-md text-error text-sm">{categoriesError}</p>
             ) : (
               <CategoryManager
                 categories={categories}
@@ -264,26 +265,72 @@ const Settings: React.FC = () => {
         )}
 
         {activeTab === 'account' && (
-          <div className="settings__section">
-            <h2>Account Settings</h2>
+          <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
+            <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Account Settings</h2>
 
-            <div className="settings__account-section">
-              <h3>Password</h3>
-              <p className="settings__description">
+            <div className="p-6 border border-border rounded-lg mb-6 bg-surface">
+              <h3 className="m-0 mb-3 text-lg text-content font-semibold">Theme</h3>
+              <p className="m-0 mb-4 text-content-secondary text-sm leading-relaxed">
+                Choose your preferred color theme. System will follow your device's theme setting.
+              </p>
+              <div className="flex gap-3 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={`flex-1 flex flex-col items-center gap-2 p-4 border-2 ${theme === 'light' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-surface text-content-secondary'} rounded-lg cursor-pointer transition-all duration-200 hover:border-primary hover:bg-primary/5 text-sm font-medium min-h-20`}
+                  aria-pressed={theme === 'light'}
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span>Light</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={`flex-1 flex flex-col items-center gap-2 p-4 border-2 ${theme === 'dark' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-surface text-content-secondary'} rounded-lg cursor-pointer transition-all duration-200 hover:border-primary hover:bg-primary/5 text-sm font-medium min-h-20`}
+                  aria-pressed={theme === 'dark'}
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <span>Dark</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('system')}
+                  className={`flex-1 flex flex-col items-center gap-2 p-4 border-2 ${theme === 'system' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-surface text-content-secondary'} rounded-lg cursor-pointer transition-all duration-200 hover:border-primary hover:bg-primary/5 text-sm font-medium min-h-20`}
+                  aria-pressed={theme === 'system'}
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>System</span>
+                </button>
+              </div>
+              <p className="m-0 p-3 bg-surface-tertiary rounded-md text-sm text-content-secondary">
+                Current theme: <strong className="text-content">{resolvedTheme === 'dark' ? 'Dark' : 'Light'}</strong>
+                {theme === 'system' && ' (following system preference)'}
+              </p>
+            </div>
+
+            <div className="p-6 border border-border rounded-lg mb-6 bg-surface">
+              <h3 className="m-0 mb-3 text-lg text-content font-semibold">Password</h3>
+              <p className="m-0 mb-4 text-content-secondary text-sm leading-relaxed">
                 Reset your password using the password reset flow.
               </p>
               <button
                 type="button"
                 onClick={() => navigate('/password-reset')}
-                className="settings__action-btn settings__action-btn--secondary"
+                className="px-6 py-3 bg-primary text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-primary-hover min-h-[44px]"
               >
                 Reset Password
               </button>
             </div>
 
-            <div className="settings__account-section settings__account-section--danger">
-              <h3>Delete Account</h3>
-              <p className="settings__description">
+            <div className="p-6 border border-error/30 rounded-lg bg-error/5">
+              <h3 className="m-0 mb-3 text-lg text-error font-semibold">Delete Account</h3>
+              <p className="m-0 mb-4 text-content-secondary text-sm leading-relaxed">
                 Permanently delete your account and all associated data. This action cannot be undone.
               </p>
               <button
@@ -302,7 +349,7 @@ const Settings: React.FC = () => {
                     handleDeleteAccount();
                   }
                 }}
-                className="settings__action-btn settings__action-btn--danger"
+                className="px-6 py-3 bg-error text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-error/80 min-h-[44px]"
               >
                 Delete Account
               </button>

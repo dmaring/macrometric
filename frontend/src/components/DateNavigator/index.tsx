@@ -4,7 +4,6 @@
  * Navigation for selecting diary dates.
  */
 import { useMemo } from 'react';
-import './DateNavigator.css';
 
 interface DateNavigatorProps {
   date: Date;
@@ -73,7 +72,7 @@ export default function DateNavigator({ date, onDateChange }: DateNavigatorProps
 
   return (
     <div
-      className="date-navigator"
+      className="flex flex-wrap items-center justify-center gap-4 px-4 py-3 bg-surface-secondary rounded-lg border border-border focus:outline-2 focus:outline-primary focus:outline-offset-2"
       data-testid="date-navigator"
       onKeyDown={handleKeyDown}
       tabIndex={0}
@@ -81,25 +80,20 @@ export default function DateNavigator({ date, onDateChange }: DateNavigatorProps
       aria-label="Date navigation"
     >
       <button
-        className="nav-button"
+        className="w-9 h-9 min-w-[44px] min-h-[44px] text-xl text-content-secondary bg-surface-tertiary border-none rounded cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-surface hover:text-content"
         onClick={goToPrevious}
         aria-label="Previous day"
       >
         ←
       </button>
 
-      <div className="date-display" role="status" aria-label="Current date">
-        <span className="date-label">{dateLabel}</span>
-        {!isToday && !isYesterday && !isTomorrow && (
-          <span className="date-full">{formatDate(date)}</span>
-        )}
-        {(isToday || isYesterday || isTomorrow) && (
-          <span className="date-full">{formatDate(date)}</span>
-        )}
+      <div className="flex-1 text-center min-w-[150px]" role="status" aria-label="Current date">
+        <span className="block text-lg font-semibold text-content">{dateLabel}</span>
+        <span className="block text-xs text-content-tertiary mt-0.5">{formatDate(date)}</span>
       </div>
 
       <button
-        className="nav-button"
+        className="w-9 h-9 min-w-[44px] min-h-[44px] text-xl text-content-secondary bg-surface-tertiary border-none rounded cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-surface hover:text-content"
         onClick={goToNext}
         aria-label="Next day"
       >
@@ -107,7 +101,7 @@ export default function DateNavigator({ date, onDateChange }: DateNavigatorProps
       </button>
 
       <button
-        className="today-button"
+        className="px-4 py-2 text-sm font-medium text-primary bg-transparent border border-primary rounded cursor-pointer transition-all duration-200 hover:bg-primary/10 disabled:text-border disabled:border-border disabled:cursor-not-allowed disabled:bg-transparent min-h-[44px] sm:w-auto w-full sm:mt-0 mt-2"
         onClick={goToToday}
         disabled={isToday}
         aria-label="Go to today"

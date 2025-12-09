@@ -11,7 +11,6 @@
  */
 import React, { useState } from 'react';
 import { CustomMeal } from '../../services/meals';
-import './styles.css';
 
 interface MealCardProps {
   meal: CustomMeal;
@@ -69,36 +68,34 @@ const MealCard: React.FC<MealCardProps> = ({
 
   if (compact) {
     return (
-      <div className={`meal-card meal-card--compact ${className}`} role="article" aria-label={`Meal: ${meal.name}`}>
-        <div className="meal-card__compact-content">
-          <div className="meal-card__compact-info">
-            <h4 className="meal-card__compact-name">{meal.name}</h4>
-            <span className="meal-card__compact-calories">{meal.totals.calories} cal</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => onAddToDiary(meal)}
-            disabled={disabled || loading}
-            className="meal-card__compact-add-btn"
-            aria-label={`Add ${meal.name} to diary`}
-          >
-            {loading ? 'Adding...' : 'Add'}
-          </button>
+      <div className={`flex items-center justify-between p-3 bg-surface border border-border rounded-lg ${className}`} role="article" aria-label={`Meal: ${meal.name}`}>
+        <div className="flex items-center gap-3">
+          <h4 className="m-0 font-semibold text-content">{meal.name}</h4>
+          <span className="text-sm text-content-secondary">{meal.totals.calories} cal</span>
         </div>
+        <button
+          type="button"
+          onClick={() => onAddToDiary(meal)}
+          disabled={disabled || loading}
+          className="px-4 py-2 bg-primary text-white rounded font-semibold text-sm hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          aria-label={`Add ${meal.name} to diary`}
+        >
+          {loading ? 'Adding...' : 'Add'}
+        </button>
       </div>
     );
   }
 
   return (
     <article
-      className={`meal-card ${className}`}
+      className={`bg-surface border border-border rounded-lg overflow-hidden shadow-sm ${className}`}
       aria-label={`Meal: ${meal.name}`}
       role="article"
     >
-      <div className="meal-card__header">
-        <div className="meal-card__title-section">
-          <h3 className="meal-card__name">{meal.name}</h3>
-          <div className="meal-card__meta">
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        <div>
+          <h3 className="m-0 text-lg font-semibold text-content">{meal.name}</h3>
+          <div className="text-sm text-content-secondary mt-1">
             {itemCount === 0 ? (
               <span>No items</span>
             ) : (
@@ -114,7 +111,7 @@ const MealCard: React.FC<MealCardProps> = ({
           <button
             type="button"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="meal-card__expand-btn"
+            className="px-4 py-2 bg-surface-secondary text-content-secondary rounded font-medium text-sm hover:bg-surface-tertiary transition-colors min-h-[44px]"
             aria-label={isCollapsed ? 'Expand meal details' : 'Collapse meal details'}
             aria-expanded={!isCollapsed}
           >
@@ -123,55 +120,57 @@ const MealCard: React.FC<MealCardProps> = ({
         )}
       </div>
 
-      <div className="meal-card__totals" data-testid="macro-breakdown">
-        <div className="meal-card__total">
-          <span className="meal-card__total-value">{meal.totals.calories}</span>
-          <span className="meal-card__total-label">cal</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4" data-testid="macro-breakdown">
+        <div className="flex flex-col items-center p-3 bg-surface-secondary rounded">
+          <span className="text-2xl font-bold text-content">{meal.totals.calories}</span>
+          <span className="text-xs text-content-secondary mt-1">cal</span>
         </div>
-        <div className="meal-card__total">
-          <span className="meal-card__total-value">{meal.totals.protein_g.toFixed(1)}g</span>
-          <span className="meal-card__total-label">protein</span>
-          {macroPercent && <span className="meal-card__total-percent">{macroPercent.protein}%</span>}
+        <div className="flex flex-col items-center p-3 bg-surface-secondary rounded">
+          <span className="text-2xl font-bold text-content">{meal.totals.protein_g.toFixed(1)}g</span>
+          <span className="text-xs text-content-secondary mt-1">protein</span>
+          {macroPercent && <span className="text-xs text-content-tertiary">{macroPercent.protein}%</span>}
         </div>
-        <div className="meal-card__total">
-          <span className="meal-card__total-value">{meal.totals.carbs_g.toFixed(1)}g</span>
-          <span className="meal-card__total-label">carbs</span>
-          {macroPercent && <span className="meal-card__total-percent">{macroPercent.carbs}%</span>}
+        <div className="flex flex-col items-center p-3 bg-surface-secondary rounded">
+          <span className="text-2xl font-bold text-content">{meal.totals.carbs_g.toFixed(1)}g</span>
+          <span className="text-xs text-content-secondary mt-1">carbs</span>
+          {macroPercent && <span className="text-xs text-content-tertiary">{macroPercent.carbs}%</span>}
         </div>
-        <div className="meal-card__total">
-          <span className="meal-card__total-value">{meal.totals.fat_g.toFixed(1)}g</span>
-          <span className="meal-card__total-label">fat</span>
-          {macroPercent && <span className="meal-card__total-percent">{macroPercent.fat}%</span>}
+        <div className="flex flex-col items-center p-3 bg-surface-secondary rounded">
+          <span className="text-2xl font-bold text-content">{meal.totals.fat_g.toFixed(1)}g</span>
+          <span className="text-xs text-content-secondary mt-1">fat</span>
+          {macroPercent && <span className="text-xs text-content-tertiary">{macroPercent.fat}%</span>}
         </div>
       </div>
 
       {!isCollapsed && itemCount > 0 && (
-        <div className="meal-card__items">
+        <div className="border-t border-border p-4 bg-surface-tertiary">
           {meal.items.map((item, index) => (
-            <div key={index} className="meal-card__item">
-              <div className="meal-card__item-name">
-                {item.food.name}
-                {item.food.brand && (
-                  <span className="meal-card__item-brand">({item.food.brand})</span>
-                )}
-                {item.is_deleted && (
-                  <span className="meal-card__item-deleted">(deleted)</span>
-                )}
-              </div>
-              <div className="meal-card__item-serving">
-                {item.quantity} × {item.food.serving_size} {item.food.serving_unit}
+            <div key={index} className="flex justify-between items-start py-2 border-b border-border last:border-b-0">
+              <div className="flex-1">
+                <div className="font-medium text-content">
+                  {item.food.name}
+                  {item.food.brand && (
+                    <span className="text-content-secondary text-sm ml-2">({item.food.brand})</span>
+                  )}
+                  {item.is_deleted && (
+                    <span className="text-error text-sm italic ml-2">(deleted)</span>
+                  )}
+                </div>
+                <div className="text-sm text-content-secondary mt-1">
+                  {item.quantity} × {item.food.serving_size} {item.food.serving_unit}
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <div className="meal-card__actions">
+      <div className="p-4 border-t border-border">
         <button
           type="button"
           onClick={() => onAddToDiary(meal)}
           disabled={disabled || loading}
-          className="meal-card__add-btn"
+          className="w-full px-6 py-3 bg-primary text-white rounded-lg font-semibold text-base hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           aria-label={`Add ${meal.name} to diary`}
         >
           {loading ? 'Adding...' : 'Add to Diary'}

@@ -13,7 +13,6 @@ import {
   reorderCategories,
 } from '../../services/categories';
 import CategoryEditor from '../CategoryEditor';
-import './styles.css';
 
 interface CategoryManagerProps {
   categories: MealCategory[];
@@ -157,13 +156,13 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
 
   if (categories.length === 0) {
     return (
-      <div className="category-manager">
-        <div className="category-manager__empty">
-          <p>No categories found</p>
+      <div className="w-full">
+        <div className="text-center py-10 text-content-tertiary">
+          <p className="mb-4">No categories found</p>
           <button
             type="button"
             onClick={handleAddCategory}
-            className="category-manager__add-btn"
+            className="px-4 py-2 bg-primary text-white border-none rounded font-semibold cursor-pointer transition-colors duration-200 hover:bg-primary-hover min-h-[44px]"
             aria-label="Add category"
           >
             Add Category
@@ -174,15 +173,15 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
   }
 
   return (
-    <div className="category-manager">
-      <div className="category-manager__header" aria-hidden={dialogMode !== null}>
-        <p className="category-manager__count">
+    <div className="w-full">
+      <div className="flex justify-between items-center mb-4" aria-hidden={dialogMode !== null}>
+        <p className="m-0 text-content-secondary text-sm">
           {categories.length} {categories.length === 1 ? 'category' : 'categories'}
         </p>
         <button
           type="button"
           onClick={handleAddCategory}
-          className="category-manager__add-btn"
+          className="px-4 py-2 bg-primary text-white border-none rounded font-semibold cursor-pointer transition-colors duration-200 hover:bg-primary-hover min-h-[44px]"
           aria-label="Add category"
         >
           Add Category
@@ -190,18 +189,18 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
       </div>
 
       {error && dialogMode === null && (
-        <div className="category-manager__error" role="alert">
+        <div className="p-3 bg-error/10 text-error rounded mb-4 text-sm" role="alert">
           {error}
         </div>
       )}
 
-      <ul className="category-manager__list" role="list" aria-hidden={dialogMode !== null}>
+      <ul className="list-none p-0 m-0 flex flex-col gap-2" role="list" aria-hidden={dialogMode !== null}>
         {categories.map((category, index) => (
           <li
             key={category.id}
-            className={`category-manager__item ${
-              dragOverIndex === index ? 'category-manager__item--drag-over' : ''
-            } ${draggedIndex === index ? 'category-manager__item--dragging' : ''}`}
+            className={`flex flex-wrap sm:flex-nowrap items-center gap-3 p-3 bg-surface border border-border rounded cursor-move transition-all duration-200 ${
+              dragOverIndex === index ? 'border-primary border-2 bg-primary/5' : ''
+            } ${draggedIndex === index ? 'opacity-50 rotate-1' : ''} hover:bg-surface-secondary hover:border-content-tertiary`}
             draggable
             onDragStart={(e) => handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
@@ -212,25 +211,27 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
           >
             <button
               type="button"
-              className="category-manager__drag-handle"
+              className="bg-transparent border-none cursor-move text-content-tertiary text-xl leading-none p-0 select-none hover:text-content-secondary"
               aria-label={`Drag ${category.name}`}
               tabIndex={-1}
             >
               ⋮⋮
             </button>
 
-            <div className="category-manager__info">
-              <span className="category-manager__name">{category.name}</span>
+            <div className="flex-1 flex items-center gap-2">
+              <span className="font-semibold text-content">{category.name}</span>
               {category.is_default && (
-                <span className="category-manager__badge">Default</span>
+                <span className="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded text-xs font-semibold uppercase">
+                  Default
+                </span>
               )}
             </div>
 
-            <div className="category-manager__actions">
+            <div className="flex gap-2 w-full sm:w-auto justify-end">
               <button
                 type="button"
                 onClick={() => handleEditCategory(category)}
-                className="category-manager__action-btn"
+                className="px-3 py-1.5 border border-border bg-surface rounded text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-surface-secondary hover:border-content-tertiary min-h-[44px]"
                 aria-label={`Edit ${category.name}`}
               >
                 Edit
@@ -239,7 +240,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
                 <button
                   type="button"
                   onClick={() => handleDeleteCategory(category)}
-                  className="category-manager__action-btn category-manager__action-btn--delete"
+                  className="px-3 py-1.5 border border-error/30 bg-surface text-error rounded text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-error/10 hover:border-error/60 min-h-[44px]"
                   aria-label={`Delete ${category.name}`}
                 >
                   Delete
@@ -248,10 +249,9 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
               {category.is_default && (
                 <button
                   type="button"
-                  className="category-manager__action-btn category-manager__action-btn--delete"
+                  className="px-3 py-1.5 border border-error/30 bg-surface text-error rounded text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-error/10 hover:border-error/60 opacity-50 cursor-not-allowed invisible min-h-[44px]"
                   aria-label={`Delete ${category.name}`}
                   disabled
-                  style={{ visibility: 'hidden' }}
                 >
                   Delete
                 </button>
@@ -274,31 +274,31 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
 
       {/* Delete Confirmation Dialog */}
       {dialogMode === 'delete' && selectedCategory && (
-        <div className="category-manager__overlay" onClick={handleCancelDialog}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4" onClick={handleCancelDialog}>
           <div
-            className="category-manager__dialog"
+            className="bg-surface rounded-lg p-6 min-w-[90vw] sm:min-w-[400px] max-w-[500px] shadow-lg"
             role="dialog"
             aria-labelledby="delete-dialog-title"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 id="delete-dialog-title" className="category-manager__dialog-title">
+            <h2 id="delete-dialog-title" className="m-0 mb-3 text-xl text-content">
               Delete {selectedCategory.name}?
             </h2>
-            <p className="category-manager__dialog-message">
+            <p className="m-0 mb-5 text-content-secondary leading-relaxed">
               This action cannot be undone. All diary entries in this category will need to be
               moved to another category first.
             </p>
             {error && (
-              <div className="category-manager__dialog-error" role="alert">
+              <div className="p-3 bg-error/10 text-error rounded mb-4 text-sm" role="alert">
                 {error}
               </div>
             )}
-            <div className="category-manager__dialog-actions">
+            <div className="flex gap-3 justify-end">
               <button
                 type="button"
                 onClick={handleCancelDialog}
-                className="category-manager__dialog-btn category-manager__dialog-btn--cancel"
+                className="px-5 py-2.5 bg-surface-secondary text-content-secondary rounded font-semibold text-base cursor-pointer transition-all duration-200 border-none hover:bg-surface-tertiary disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
                 disabled={isProcessing}
               >
                 Cancel
@@ -306,7 +306,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, onUpdate 
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="category-manager__dialog-btn category-manager__dialog-btn--delete"
+                className="px-5 py-2.5 bg-error text-white rounded font-semibold text-base cursor-pointer transition-all duration-200 border-none hover:bg-error/90 disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
                 disabled={isProcessing}
                 aria-label="Confirm delete"
               >

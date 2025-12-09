@@ -5,7 +5,6 @@
  * logs those errors, and displays a fallback UI instead of crashing.
  */
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import './styles.css';
 
 interface Props {
   children: ReactNode;
@@ -63,18 +62,18 @@ class ErrorBoundary extends Component<Props, State> {
 
       // Default fallback UI
       return (
-        <div className="error-boundary">
-          <div className="error-boundary__container">
-            <div className="error-boundary__icon">⚠️</div>
-            <h1 className="error-boundary__title">Oops! Something went wrong</h1>
-            <p className="error-boundary__message">
+        <div className="min-h-screen flex items-center justify-center bg-surface p-4">
+          <div className="max-w-2xl w-full bg-surface-secondary rounded-lg p-8 text-center shadow-lg">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h1 className="text-3xl font-bold text-content mb-4">Oops! Something went wrong</h1>
+            <p className="text-content-secondary mb-6 leading-relaxed">
               We're sorry for the inconvenience. The application encountered an unexpected error.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="error-boundary__details">
-                <summary className="error-boundary__summary">Error Details (Development Only)</summary>
-                <pre className="error-boundary__stack">
+              <details className="text-left bg-surface rounded-lg p-4 mb-6 border border-border">
+                <summary className="cursor-pointer font-semibold text-content-secondary mb-2">Error Details (Development Only)</summary>
+                <pre className="text-xs overflow-auto bg-surface-tertiary p-4 rounded text-content-secondary whitespace-pre-wrap">
                   <strong>Error:</strong> {this.state.error.toString()}
                   {'\n\n'}
                   <strong>Stack Trace:</strong>
@@ -84,16 +83,16 @@ class ErrorBoundary extends Component<Props, State> {
               </details>
             )}
 
-            <div className="error-boundary__actions">
+            <div className="flex gap-4 justify-center">
               <button
                 onClick={this.handleReset}
-                className="error-boundary__button error-boundary__button--primary"
+                className="px-6 py-3 bg-primary text-white rounded-lg font-semibold cursor-pointer transition-colors duration-200 hover:bg-primary-hover min-h-[44px]"
               >
                 Try Again
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="error-boundary__button error-boundary__button--secondary"
+                className="px-6 py-3 bg-surface-tertiary text-content-secondary rounded-lg font-semibold cursor-pointer transition-colors duration-200 hover:bg-border min-h-[44px]"
               >
                 Go to Home
               </button>

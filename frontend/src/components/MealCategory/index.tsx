@@ -5,7 +5,6 @@
  */
 import { useState } from 'react';
 import DiaryEntry from '../DiaryEntry';
-import './MealCategory.css';
 
 interface Food {
   id: string;
@@ -64,28 +63,28 @@ export default function MealCategory({
   };
 
   return (
-    <section className="meal-category" role="region" aria-label={name}>
-      <div className="category-header">
+    <section className="bg-surface-secondary rounded-lg overflow-hidden border border-border" role="region" aria-label={name}>
+      <div className="flex flex-wrap items-center gap-4 px-4 py-3 bg-surface-tertiary">
         <button
-          className="category-toggle"
+          className="flex items-center gap-2 p-2 bg-transparent border-none text-content cursor-pointer flex-1 min-w-[150px] min-h-[44px] group"
           onClick={toggleCollapsed}
           aria-expanded={!collapsed}
           aria-label={name}
         >
-          <span className="collapse-icon">{collapsed ? '▶' : '▼'}</span>
-          <h2 className="category-name">{name}</h2>
+          <span className="text-xs text-content-tertiary">{collapsed ? '▶' : '▼'}</span>
+          <h2 className="m-0 text-base font-semibold text-content group-hover:text-primary transition-colors duration-200">{name}</h2>
           {collapsed && entries.length > 0 && (
-            <span className="entry-count">{entries.length} items</span>
+            <span className="text-xs text-content-tertiary ml-2">{entries.length} items</span>
           )}
         </button>
 
-        <div className="category-summary">
-          <span className="category-calories">{totals.calories} cal</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-content-secondary">{totals.calories} cal</span>
         </div>
 
-        <div className="category-actions">
+        <div className="flex gap-2">
           <button
-            className="add-food-button"
+            className="px-3 py-1.5 text-sm font-medium text-primary bg-transparent border border-primary rounded cursor-pointer transition-all duration-200 hover:bg-primary/10 min-h-[44px]"
             onClick={() => onAddFood(id)}
             aria-label={`Add food to ${name}`}
           >
@@ -93,7 +92,7 @@ export default function MealCategory({
           </button>
           {onAddMeal && (
             <button
-              className="add-meal-button"
+              className="px-3 py-1.5 text-sm font-medium text-primary bg-transparent border border-primary rounded cursor-pointer transition-all duration-200 hover:bg-primary/10 min-h-[44px]"
               onClick={() => onAddMeal(id)}
               aria-label={`Add meal to ${name}`}
             >
@@ -104,15 +103,15 @@ export default function MealCategory({
       </div>
 
       {!collapsed && (
-        <div className="category-content">
+        <div className="px-4 py-3 pb-4">
           {entries.length === 0 ? (
-            <div className="empty-category">
-              <p>No foods logged yet. Add food to get started.</p>
+            <div className="p-4 text-center text-content-tertiary">
+              <p className="m-0 text-sm">No foods logged yet. Add food to get started.</p>
             </div>
           ) : (
-            <ul className="entries-list" role="list">
+            <ul className="list-none m-0 p-0 flex flex-col gap-2" role="list">
               {entries.map((entry) => (
-                <li key={entry.id}>
+                <li key={entry.id} className="m-0 p-0">
                   <DiaryEntry
                     entry={entry}
                     onEdit={onEditEntry}

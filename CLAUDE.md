@@ -1,11 +1,11 @@
 # macrometric Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-12-06
+Auto-generated from all feature plans. Last updated: 2025-12-08
 
 ## Active Technologies
 
 - **Backend**: Python 3.11+, FastAPI, SQLAlchemy, PostgreSQL
-- **Frontend**: TypeScript, React, React Router, Axios, Vite
+- **Frontend**: TypeScript, React, React Router, Axios, Vite, Tailwind CSS
 - **Package Management**: uv (Python), npm (Node.js)
 
 ## Project Structure
@@ -54,7 +54,40 @@ npm run build                           # Production build
 
 ## Recent Changes
 
+- **003-ui-ux-tailwind** (2025-12-08): Complete Tailwind CSS migration with dark/light/system theme toggle, full CSS replacement (20 CSS files removed), mobile-responsive design, and modern visual polish
 - 001-macro-calorie-tracker: Macro nutrient and calorie tracking application
+
+## Styling & Theming
+
+### Tailwind CSS
+The frontend uses **Tailwind CSS 3.4+** with a custom design system:
+
+- **Theme Support**: Dark, light, and system preference modes
+- **Color System**: Semantic tokens via CSS custom properties (surface, content, primary, border, success, warning, error)
+- **Theme Toggle**: Available in Settings page with localStorage persistence and FOUC prevention
+- **Design Patterns**:
+  - Cards: `bg-surface-secondary rounded-lg border border-border shadow-sm`
+  - Buttons: `px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors min-h-[44px]`
+  - Inputs: `w-full px-3 py-2 bg-surface-tertiary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary`
+
+### Responsive Design
+- **Mobile-first approach** with breakpoints at 640px (sm:), 1024px (lg:)
+- **Touch targets**: All interactive elements ≥ 44x44px (WCAG compliant)
+- **Viewport support**: 320px (mobile) to 1920px (desktop)
+- **Horizontal scroll** for tabs on mobile with hidden scrollbars
+
+### Accessibility
+- **Reduced motion**: Respects `prefers-reduced-motion` OS setting
+- **Focus states**: Visible focus rings on all interactive elements
+- **Semantic colors**: High contrast ratios for WCAG AA compliance
+- **Loading states**: Skeleton loaders that match content structure
+
+### Component Structure
+All components use Tailwind utility classes exclusively (no CSS modules):
+- `frontend/src/components/` - Reusable UI components
+- `frontend/src/pages/` - Page-level components
+- `frontend/src/contexts/ThemeContext.tsx` - Theme management
+- `frontend/src/components/Skeleton/` - Loading state components
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

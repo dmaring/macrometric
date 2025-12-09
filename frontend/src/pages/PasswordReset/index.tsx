@@ -8,7 +8,6 @@
  */
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import './styles.css';
 
 const PasswordReset: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -99,46 +98,46 @@ const PasswordReset: React.FC = () => {
   };
 
   return (
-    <div className="password-reset">
-      <div className="password-reset__container">
-        <div className="password-reset__card">
-          <h1 className="password-reset__title">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface to-surface-secondary p-4 transition-colors duration-200">
+      <div className="w-full max-w-md">
+        <div className="bg-surface-secondary rounded-xl p-10 sm:p-8 shadow-2xl border border-border">
+          <h1 className="m-0 mb-6 text-3xl sm:text-2xl font-bold text-content text-center">
             {mode === 'request' ? 'Reset Password' : 'Set New Password'}
           </h1>
 
           {mode === 'request' ? (
             // Request reset form
             requestSent ? (
-              <div className="password-reset__success">
-                <p className="password-reset__success-icon">✓</p>
-                <p className="password-reset__success-message">
+              <div className="text-center py-8">
+                <p className="text-6xl text-success m-0 mb-4">✓</p>
+                <p className="text-lg font-semibold text-content m-0 mb-3">
                   Check your email for password reset instructions.
                 </p>
-                <p className="password-reset__success-note">
+                <p className="text-sm text-content-secondary m-0 mb-6">
                   If you don't see the email, check your spam folder.
                 </p>
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className="password-reset__back-btn"
+                  className="px-6 py-3 bg-primary text-white border-none rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-primary-hover min-h-[44px]"
                 >
                   Back to Login
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleRequestReset} className="password-reset__form">
-                <p className="password-reset__description">
+              <form onSubmit={handleRequestReset} className="flex flex-col gap-5">
+                <p className="m-0 mb-6 text-content-secondary text-sm text-center leading-relaxed">
                   Enter your email address and we'll send you instructions to reset your password.
                 </p>
 
                 {requestError && (
-                  <div className="password-reset__error" role="alert">
+                  <div className="px-4 py-3 bg-error/10 border border-error/30 rounded-lg text-error text-sm font-medium" role="alert">
                     {requestError}
                   </div>
                 )}
 
-                <div className="password-reset__field">
-                  <label htmlFor="email">Email Address</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="email" className="font-semibold text-sm text-content-secondary">Email Address</label>
                   <input
                     id="email"
                     type="email"
@@ -147,12 +146,13 @@ const PasswordReset: React.FC = () => {
                     placeholder="you@example.com"
                     required
                     disabled={requestLoading}
+                    className="px-4 py-3 border border-border rounded-lg text-base text-content bg-surface-tertiary transition-all duration-200 focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(59,130,246,0.1)] disabled:bg-surface disabled:cursor-not-allowed placeholder:text-content-tertiary min-h-[44px]"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="password-reset__submit"
+                  className="px-6 py-3.5 bg-primary text-white border-none rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none min-h-[44px]"
                   disabled={requestLoading}
                 >
                   {requestLoading ? 'Sending...' : 'Send Reset Link'}
@@ -161,7 +161,7 @@ const PasswordReset: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className="password-reset__cancel"
+                  className="px-6 py-3 bg-transparent text-content-secondary border border-border rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-surface hover:text-content disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
                   disabled={requestLoading}
                 >
                   Back to Login
@@ -171,29 +171,29 @@ const PasswordReset: React.FC = () => {
           ) : (
             // Reset password form
             resetSuccess ? (
-              <div className="password-reset__success">
-                <p className="password-reset__success-icon">✓</p>
-                <p className="password-reset__success-message">
+              <div className="text-center py-8">
+                <p className="text-6xl text-success m-0 mb-4">✓</p>
+                <p className="text-lg font-semibold text-content m-0 mb-3">
                   Your password has been reset successfully!
                 </p>
-                <p className="password-reset__success-note">
+                <p className="text-sm text-content-secondary m-0 mb-6">
                   Redirecting to login...
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleResetPassword} className="password-reset__form">
-                <p className="password-reset__description">
+              <form onSubmit={handleResetPassword} className="flex flex-col gap-5">
+                <p className="m-0 mb-6 text-content-secondary text-sm text-center leading-relaxed">
                   Enter your new password below.
                 </p>
 
                 {resetError && (
-                  <div className="password-reset__error" role="alert">
+                  <div className="px-4 py-3 bg-error/10 border border-error/30 rounded-lg text-error text-sm font-medium" role="alert">
                     {resetError}
                   </div>
                 )}
 
-                <div className="password-reset__field">
-                  <label htmlFor="new-password">New Password</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="new-password" className="font-semibold text-sm text-content-secondary">New Password</label>
                   <input
                     id="new-password"
                     type="password"
@@ -203,14 +203,15 @@ const PasswordReset: React.FC = () => {
                     minLength={8}
                     required
                     disabled={resetLoading}
+                    className="px-4 py-3 border border-border rounded-lg text-base text-content bg-surface-tertiary transition-all duration-200 focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(59,130,246,0.1)] disabled:bg-surface disabled:cursor-not-allowed placeholder:text-content-tertiary min-h-[44px]"
                   />
-                  <small className="password-reset__hint">
+                  <small className="text-xs text-content-tertiary">
                     Must be at least 8 characters
                   </small>
                 </div>
 
-                <div className="password-reset__field">
-                  <label htmlFor="confirm-password">Confirm Password</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="confirm-password" className="font-semibold text-sm text-content-secondary">Confirm Password</label>
                   <input
                     id="confirm-password"
                     type="password"
@@ -220,12 +221,13 @@ const PasswordReset: React.FC = () => {
                     minLength={8}
                     required
                     disabled={resetLoading}
+                    className="px-4 py-3 border border-border rounded-lg text-base text-content bg-surface-tertiary transition-all duration-200 focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(59,130,246,0.1)] disabled:bg-surface disabled:cursor-not-allowed placeholder:text-content-tertiary min-h-[44px]"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="password-reset__submit"
+                  className="px-6 py-3.5 bg-primary text-white border-none rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none min-h-[44px]"
                   disabled={resetLoading}
                 >
                   {resetLoading ? 'Resetting...' : 'Reset Password'}
@@ -234,7 +236,7 @@ const PasswordReset: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className="password-reset__cancel"
+                  className="px-6 py-3 bg-transparent text-content-secondary border border-border rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-surface hover:text-content disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
                   disabled={resetLoading}
                 >
                   Cancel
