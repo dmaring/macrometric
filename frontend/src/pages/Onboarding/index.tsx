@@ -125,7 +125,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface to-surface-secondary p-8 sm:p-4 transition-colors duration-200" data-testid="onboarding-page">
-      <div className="w-full max-w-2xl bg-surface-secondary rounded-xl p-10 sm:p-8 shadow-2xl border border-border">
+      <div className="w-full max-w-xl bg-surface-secondary rounded-xl p-10 sm:p-8 shadow-2xl border border-border">
         <div className="text-center mb-8">
           <h1 className="m-0 mb-2 text-3xl text-content font-semibold">Set Your Daily Goals</h1>
           <p className="m-0 text-content-secondary text-base">
@@ -134,8 +134,8 @@ export default function OnboardingPage() {
           </p>
         </div>
 
-        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-2">
+        <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-3">
             <h2 className="m-0 text-lg font-semibold text-content-secondary">Calorie Target</h2>
             <p className="m-0 text-sm text-content-tertiary">How many calories do you want to consume per day?</p>
             <div className="flex flex-col gap-1.5">
@@ -163,10 +163,12 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h2 className="m-0 text-lg font-semibold text-content-secondary">Macro Targets</h2>
-            <p className="m-0 text-sm text-content-tertiary">Set targets for protein, carbs, and fat (all optional).</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="m-0 mb-2 text-lg font-semibold text-content-secondary">Macro Targets</h2>
+              <p className="m-0 text-sm text-content-tertiary">Set targets for protein, carbs, and fat (all optional).</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-6 gap-x-6 mt-1">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="protein" className="text-sm font-medium text-content-secondary">Protein</label>
                 <div className="relative flex items-center">
@@ -182,7 +184,7 @@ export default function OnboardingPage() {
                     aria-describedby={
                       errors.protein_g ? 'protein-error' : undefined
                     }
-                    className="flex-1 px-3 py-3 pr-10 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
+                    className="w-full px-3 py-3 pr-10 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
                   />
                   <span className="absolute right-3 text-content-tertiary text-sm pointer-events-none">g</span>
                 </div>
@@ -206,7 +208,7 @@ export default function OnboardingPage() {
                     placeholder="e.g., 250"
                     aria-invalid={!!errors.carbs_g}
                     aria-describedby={errors.carbs_g ? 'carbs-error' : undefined}
-                    className="flex-1 px-3 py-3 pr-10 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
+                    className="w-full px-3 py-3 pr-10 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
                   />
                   <span className="absolute right-3 text-content-tertiary text-sm pointer-events-none">g</span>
                 </div>
@@ -230,7 +232,7 @@ export default function OnboardingPage() {
                     placeholder="e.g., 65"
                     aria-invalid={!!errors.fat_g}
                     aria-describedby={errors.fat_g ? 'fat-error' : undefined}
-                    className="flex-1 px-3 py-3 pr-10 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
+                    className="w-full px-3 py-3 pr-10 text-base text-content bg-surface-tertiary border border-border rounded-md focus:outline-none focus:border-primary transition-colors duration-200 placeholder:text-content-tertiary min-h-[44px]"
                   />
                   <span className="absolute right-3 text-content-tertiary text-sm pointer-events-none">g</span>
                 </div>
@@ -243,7 +245,7 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          <div className="flex flex-col-reverse sm:flex-row gap-4 mt-4">
+          <div className="flex flex-col-reverse sm:flex-row gap-4 mt-6">
             <button
               type="button"
               className="flex-1 px-6 py-3.5 text-base font-medium text-content-secondary bg-transparent border border-border rounded-md cursor-pointer transition-all duration-200 hover:text-content hover:bg-surface-tertiary disabled:bg-transparent disabled:text-content-tertiary disabled:cursor-not-allowed min-h-[44px]"
