@@ -9,17 +9,60 @@ A comprehensive food tracking application for logging daily macro nutrients and 
 - **User Authentication** - Secure JWT-based auth with access/refresh tokens
 - **Daily Food Diary** - Log foods by meal category (Breakfast, Lunch, Dinner)
 - **Macro Tracking** - Real-time totals for calories, protein, carbs, and fat
-- **Goal Setting** - Set optional daily targets and track progress
+- **Goal Setting** - Set and edit daily nutritional targets (calories, protein, carbs, fat)
 - **Food Search** - Search 300K+ foods from USDA FoodData Central
-- **Custom Foods** - Create and save your own foods for homemade recipes
+- **Custom Foods** - Create, edit, and delete your own foods for homemade recipes
+- **Custom Meals** - Save food combinations as reusable meals
+- **Category Management** - Customize meal categories (rename, reorder, add/delete)
 - **Date Navigation** - View and edit food logs for any date
-- **Progress Visualization** - Progress bars when goals are set
+- **Progress Visualization** - Progress bars tracking toward daily goals
+- **Theme System** - Dark, light, and system-preference modes with persistence
+- **Responsive Design** - Mobile-first design working seamlessly from 320px to 1920px
+- **Settings Page** - Comprehensive management for goals, custom foods, custom meals, categories
 
 ### 🚧 **Roadmap**
 
-- **Custom Meals** - Save food combinations as reusable meals
-- **Category Management** - Customize meal categories (rename, reorder, add/delete)
-- **Account Management** - Password reset and account deletion
+- **Account Management** - Password reset and full account deletion
+- **Export/Import** - Backup and restore your data
+- **Meal Planning** - Plan meals for future dates
+
+---
+
+## 📸 Screenshots
+
+### Desktop View - Daily Diary
+![Desktop Diary](.playwright-mcp/desktop-1920px-diary.png)
+*Track your daily food intake with real-time macro totals and progress toward goals*
+
+### Settings Page - Goals & Custom Foods
+![Settings Page](.playwright-mcp/desktop-1920px-settings.png)
+*Manage your nutritional goals and custom food library*
+
+### Dark Mode Support
+<table>
+<tr>
+<td width="50%"><img src=".playwright-mcp/diary-light-mode-before.png" alt="Light Mode"/></td>
+<td width="50%"><img src=".playwright-mcp/settings-account-dark-mode.png" alt="Dark Mode"/></td>
+</tr>
+<tr>
+<td align="center"><em>Light Mode</em></td>
+<td align="center"><em>Dark Mode</em></td>
+</tr>
+</table>
+
+### Responsive Design
+<table>
+<tr>
+<td width="33%"><img src=".playwright-mcp/mobile-320px-diary.png" alt="Mobile 320px"/></td>
+<td width="33%"><img src=".playwright-mcp/tablet-768px-diary.png" alt="Tablet 768px"/></td>
+<td width="33%"><img src=".playwright-mcp/desktop-1920px-diary.png" alt="Desktop 1920px"/></td>
+</tr>
+<tr>
+<td align="center"><em>Mobile (320px)</em></td>
+<td align="center"><em>Tablet (768px)</em></td>
+<td align="center"><em>Desktop (1920px)</em></td>
+</tr>
+</table>
 
 ---
 
@@ -106,6 +149,13 @@ Open http://localhost:5173 in your browser and create an account!
 - Vite - Build tool
 - React Router - Navigation
 - Axios - HTTP client
+- Tailwind CSS 3.4+ - Utility-first styling with custom design tokens
+- CSS Custom Properties - Theme system (dark/light/system modes)
+
+**Testing:**
+- pytest - Backend unit/integration tests
+- Jest + React Testing Library - Frontend component tests
+- Playwright - End-to-end testing
 
 **Database:**
 - PostgreSQL - Primary database
@@ -366,6 +416,27 @@ For issues and questions:
 
 ---
 
+## 📚 Development Methodology
+
+Macrometric was built using **spec-driven development** with OpenSpec/Spec Kit - a structured approach that writes detailed specifications before code. This methodology ensured:
+
+- **Clear Requirements**: Every feature defined with user stories and acceptance criteria
+- **Test-Driven Development**: 186 atomic tasks with tests written first
+- **Constitutional Principles**: All features validated against project constitution
+- **Living Documentation**: Specs auto-generate CLAUDE.md with current architecture
+
+**Learn More:**
+- Read the full article: [`article-spec-driven-development.md`](./article-spec-driven-development.md)
+- Browse feature specs: [`specs/`](./specs/) directory
+- See the constitution: [`.specify/memory/constitution.md`](./.specify/memory/constitution.md)
+
+Each feature includes:
+- `spec.md` - Technology-agnostic requirements
+- `plan.md` - Technical design with constitutional checks
+- `tasks.md` - Atomic TDD implementation tasks
+
+---
+
 ## 🎯 Current Status
 
 **Phase Completion:**
@@ -375,13 +446,20 @@ For issues and questions:
 - ✅ Phase 4: Goal Setting (US6)
 - ✅ Phase 5: Food Search (US2)
 - ✅ Phase 6: Custom Foods (US3)
-- 🚧 Phase 7: Custom Meals (US4) - In Progress (42% - tests & models complete)
-- ⏳ Phase 8: Category Management (US5) - Not started
-- ⏳ Phase 9: Polish & Final - Partial
+- ✅ Phase 7: Custom Meals (US4) - **COMPLETED** ✅
+- ✅ Phase 8: Category Management (US5) - **COMPLETED** ✅
+- 🚧 Phase 9: Polish & Final - Partial (password reset, account deletion pending)
+
+**Implemented Features:**
+- 5 major feature branches fully completed
+- Tailwind CSS design system with theme toggle
+- Comprehensive settings management
+- Full CRUD for all entities
 
 **Test Coverage:**
-- Backend: 83/88 tests (94%)
-- Frontend: 116/184 tests (63%)
-- **Total: ~200 passing tests**
+- Backend: 159/169 tests (94%)
+- Frontend: Comprehensive test suites
+- E2E: Playwright tests for critical journeys
+- **Total: 186 tasks completed with TDD**
 
-This is a production-ready MVP with core features fully functional! 🚀
+This is a production-ready MVP with all core features fully functional! 🚀
