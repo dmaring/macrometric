@@ -14,6 +14,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import MealBuilder from '../../components/MealBuilder';
 import CustomMealList from '../../components/CustomMealList';
 import CategoryManager from '../../components/CategoryManager';
+import GoalsForm from '../../components/GoalsForm';
+import CustomFoodForm from '../../components/CustomFoodForm';
+import CustomFoodList from '../../components/CustomFoodList';
 import {
   getCustomMeals,
   createCustomMeal,
@@ -26,6 +29,11 @@ import {
   getCategories,
   MealCategory,
 } from '../../services/categories';
+import {
+  getCustomFoods,
+  deleteCustomFood,
+  CustomFood,
+} from '../../services/customFoods';
 import api from '../../services/api';
 
 const Settings: React.FC = () => {
@@ -37,6 +45,11 @@ const Settings: React.FC = () => {
   const [mealsError, setMealsError] = useState('');
   const [showMealBuilder, setShowMealBuilder] = useState(false);
   const [editingMeal, setEditingMeal] = useState<CustomMeal | undefined>(undefined);
+  const [foods, setFoods] = useState<CustomFood[]>([]);
+  const [foodsLoading, setFoodsLoading] = useState(false);
+  const [foodsError, setFoodsError] = useState('');
+  const [showFoodForm, setShowFoodForm] = useState(false);
+  const [editingFood, setEditingFood] = useState<CustomFood | undefined>(undefined);
   const [categories, setCategories] = useState<MealCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [categoriesError, setCategoriesError] = useState('');
@@ -46,6 +59,13 @@ const Settings: React.FC = () => {
   useEffect(() => {
     if (activeTab === 'meals') {
       loadMeals();
+    }
+  }, [activeTab]);
+
+  // Load custom foods
+  useEffect(() => {
+    if (activeTab === 'foods') {
+      loadFoods();
     }
   }, [activeTab]);
 
@@ -111,6 +131,51 @@ const Settings: React.FC = () => {
     } catch (error) {
       console.error('Error deleting meal:', error);
       alert('Failed to delete meal. Please try again.');
+    }
+  };
+
+  const loadFoods = async () => {
+    setFoodsLoading(true);
+    setFoodsError('');
+    try {
+      const foodsData = await getCustomFoods();
+      setFoods(foodsData);
+    } catch (error) {
+      setFoodsError('Failed to load custom foods');
+      console.error('Error loading foods:', error);
+    } finally {
+      setFoodsLoading(false);
+    }
+  };
+
+  const handleCreateFood = () => {
+    setEditingFood(undefined);
+    setShowFoodForm(true);
+  };
+
+  const handleEditFood = (food: CustomFood) => {
+    setEditingFood(food);
+    setShowFoodForm(true);
+  };
+
+  const handleSaveFood = async () => {
+    setShowFoodForm(false);
+    setEditingFood(undefined);
+    await loadFoods();
+  };
+
+  const handleCancelFoodForm = () => {
+    setShowFoodForm(false);
+    setEditingFood(undefined);
+  };
+
+  const handleDeleteFood = async (foodId: string) => {
+    try {
+      await deleteCustomFood(foodId);
+      await loadFoods();
+    } catch (error) {
+      console.error('Error deleting food:', error);
+      alert('Failed to delete food. Please try again.');
     }
   };
 
@@ -196,17 +261,40 @@ const Settings: React.FC = () => {
       </div>
 
       <div className="min-h-96">
-        {activeTab === 'goals' && (
-          <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
-            <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Daily Goals</h2>
-            <p className="text-content-secondary">Goals section - To be implemented</p>
-          </div>
-        )}
+        {activeTab === 'goals' && <GoalsForm />}
 
         {activeTab === 'foods' && (
           <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
-            <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Custom Foods</h2>
-            <p className="text-content-secondary">Custom foods section - To be implemented</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h2 className="m-0 text-2xl text-content font-semibold">Custom Foods</h2>
+              {!showFoodForm && (
+                <button
+                  type="button"
+                  onClick={handleCreateFood}
+                  className="px-6 py-3 bg-success text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-success/80 min-h-[44px]"
+                >
+                  Create New Food
+                </button>
+              )}
+            </div>
+
+            {showFoodForm ? (
+              <div className="mt-6">
+                <CustomFoodForm
+                  food={editingFood}
+                  onSave={handleSaveFood}
+                  onCancel={handleCancelFoodForm}
+                />
+              </div>
+            ) : (
+              <CustomFoodList
+                foods={foods}
+                onEdit={handleEditFood}
+                onDelete={handleDeleteFood}
+                loading={foodsLoading}
+                error={foodsError}
+              />
+            )}
           </div>
         )}
 
