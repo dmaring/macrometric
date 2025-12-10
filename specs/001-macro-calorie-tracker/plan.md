@@ -1,124 +1,104 @@
-# Implementation Plan: Macro Calorie Tracker
+# Implementation Plan: [FEATURE]
 
-**Branch**: `001-macro-calorie-tracker` | **Date**: 2025-12-06 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-macro-calorie-tracker/spec.md`
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-Build a modern macro nutrient and calorie counter web application with React frontend and FastAPI backend. Users can quickly log daily food intake, search an external nutrition database (USDA FoodData Central), create custom foods/meals, and track progress toward daily calorie and macro goals. Authentication via email/password with PostgreSQL persistence.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: Python 3.11+ (backend), TypeScript/JavaScript ES6+ (frontend)
-**Primary Dependencies**: FastAPI, SQLAlchemy, React, React Router, Axios
-**Storage**: PostgreSQL 15+
-**Testing**: pytest (backend), Jest + React Testing Library (frontend)
-**Target Platform**: Web browsers (modern), Linux/Docker server deployment
-**Project Type**: Web application (frontend + backend)
-**Performance Goals**: API responses <200ms p95, search results <2s, UI updates <1s
-**Constraints**: Offline-capable for custom food entry, HTTPS required, WCAG 2.1 AA
-**Scale/Scope**: MVP for single-user to small scale (~1000 users initially)
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
+
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [single/web/mobile - determines source structure]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-| Principle | Status | Evidence |
-|-----------|--------|----------|
-| I. Modern Web Application | PASS | React SPA + FastAPI backend architecture |
-| II. Semantic HTML | PASS | React with semantic elements, proper ARIA |
-| III. User-Centric Design | PASS | Focus on quick food logging (<30s), inline search |
-| IV. Performance | PASS | Async FastAPI, React optimization, lazy loading |
-| V. Simplicity | PASS | Established stack (React, FastAPI, PostgreSQL) |
-| VI. Security & Privacy | PASS | JWT auth, bcrypt passwords, account deletion |
-
-**All gates PASS** - proceeding to Phase 0.
+[Gates determined based on constitution file]
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/001-macro-calorie-tracker/
-├── plan.md              # This file
-├── research.md          # Phase 0: Technology decisions
-├── data-model.md        # Phase 1: Entity definitions
-├── quickstart.md        # Phase 1: Setup guide
-├── contracts/           # Phase 1: API specifications
-│   └── api.yaml         # OpenAPI 3.0 specification
-└── tasks.md             # Phase 2: Implementation tasks (via /speckit.tasks)
+specs/[###-feature]/
+├── plan.md              # This file (/speckit.plan command output)
+├── research.md          # Phase 0 output (/speckit.plan command)
+├── data-model.md        # Phase 1 output (/speckit.plan command)
+├── quickstart.md        # Phase 1 output (/speckit.plan command)
+├── contracts/           # Phase 1 output (/speckit.plan command)
+└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
 ### Source Code (repository root)
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
 
 ```text
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
+
+tests/
+├── contract/
+├── integration/
+└── unit/
+
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
 ├── src/
-│   ├── models/          # SQLAlchemy ORM models
-│   │   ├── user.py
-│   │   ├── food.py
-│   │   ├── diary.py
-│   │   └── meal.py
-│   ├── services/        # Business logic layer
-│   │   ├── auth.py
-│   │   ├── food_search.py
-│   │   ├── diary.py
-│   │   └── nutrition_api.py
-│   ├── api/             # FastAPI route handlers
-│   │   ├── auth.py
-│   │   ├── diary.py
-│   │   ├── foods.py
-│   │   ├── meals.py
-│   │   └── users.py
-│   └── core/            # Configuration, security, dependencies
-│       ├── config.py
-│       ├── security.py
-│       └── deps.py
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   └── conftest.py
-├── alembic/             # Database migrations
-├── requirements.txt
-└── main.py
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
 
 frontend/
 ├── src/
-│   ├── components/      # Reusable UI components
-│   │   ├── FoodSearch/
-│   │   ├── DiaryEntry/
-│   │   ├── MacroDisplay/
-│   │   └── MealCategory/
-│   ├── pages/           # Route-level pages
-│   │   ├── Diary/
-│   │   ├── Login/
-│   │   ├── Register/
-│   │   ├── Settings/
-│   │   └── Onboarding/
-│   ├── services/        # API client and utilities
-│   │   ├── api.ts
-│   │   └── auth.ts
-│   ├── hooks/           # Custom React hooks
-│   │   ├── useAuth.ts
-│   │   ├── useDiary.ts
-│   │   └── useFoodSearch.ts
-│   └── store/           # State management (if needed)
-├── tests/
-├── package.json
-└── vite.config.ts
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
 
-docker-compose.yml       # Local development environment
-.env.example             # Environment variables template
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: Web application with separate frontend and backend directories. This supports independent deployment, clear separation of concerns, and aligns with the constitution's "Modern Web Application" principle.
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Complexity Tracking
 
-> No violations requiring justification. All choices align with constitution principles.
+> **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Decision | Rationale |
-|----------|-----------|
-| Separate frontend/backend | Required for SPA + API architecture per constitution |
-| PostgreSQL over SQLite | User data persistence requires robust relational DB |
-| External API (USDA) | User-requested food search capability |
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |

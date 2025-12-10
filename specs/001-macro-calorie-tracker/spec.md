@@ -55,6 +55,10 @@ A user wants to create a custom food item that isn't available in the search res
 2. **Given** a user has entered custom food details, **When** they save the food, **Then** it is stored in their profile
 3. **Given** a user has saved custom foods, **When** they search for foods, **Then** their custom foods appear in search results
 4. **Given** a user views their profile, **When** they access saved foods, **Then** they can edit or delete their custom foods
+5. **Given** a user navigates to Settings, **When** they click the "Custom Foods" tab, **Then** they see a list of all their custom foods with nutritional information
+6. **Given** a user is viewing the Custom Foods tab, **When** they click "Create New Food", **Then** a form appears allowing them to enter food details
+7. **Given** a user is viewing a custom food in the list, **When** they click edit, **Then** they can modify the food's details and save changes
+8. **Given** a user clicks delete on a custom food, **When** they confirm the deletion, **Then** the food is removed from their profile and search results
 
 ---
 
@@ -107,6 +111,10 @@ A user wants to set daily targets for calories and macronutrients to track their
 2. **Given** a user is on the goal-setting prompt, **When** they choose to skip, **Then** they proceed to the diary without goals (totals shown without targets)
 3. **Given** a user has set goals, **When** they view the daily diary, **Then** they see their progress toward each goal (e.g., "1200 / 2000 cal")
 4. **Given** a user wants to change goals, **When** they access settings, **Then** they can edit their daily targets
+5. **Given** a user navigates to Settings, **When** they click the "Goals" tab, **Then** they see their current daily goals or a prompt to set goals if none exist
+6. **Given** a user is viewing the Goals tab, **When** they enter or modify values for calories, protein, carbs, and fat, **Then** they can save the changes
+7. **Given** a user saves new goals, **When** they return to the diary page, **Then** the progress bars reflect the updated targets
+8. **Given** a user has no goals set, **When** they view the Goals tab, **Then** they see a clear call-to-action to set their first goals with helpful guidance
 
 ---
 
@@ -147,6 +155,9 @@ A user wants to set daily targets for calories and macronutrients to track their
 - **FR-023**: System MUST retain all diary entries indefinitely until user explicitly deletes them
 - **FR-024**: System MUST allow users to delete individual diary entries
 - **FR-025**: System MUST allow users to permanently delete their account and all associated data
+- **FR-026**: System MUST provide a Settings page with dedicated tabs for Goals, Custom Foods, Custom Meals, Categories, and Account management
+- **FR-027**: System MUST display a list view of all custom foods in the Settings Custom Foods tab with options to create, edit, and delete
+- **FR-028**: System MUST provide a goal editing form in the Settings Goals tab showing current values and allowing modifications
 
 ### Key Entities
 
