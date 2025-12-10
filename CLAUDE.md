@@ -3,6 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2025-12-08
 
 ## Active Technologies
+- PostgreSQL (existing tables: `daily_goals`, `custom_foods`) (005-settings-goals-foods)
 
 - **Backend**: Python 3.11+, FastAPI, SQLAlchemy, PostgreSQL
 - **Frontend**: TypeScript, React, React Router, Axios, Vite, Tailwind CSS
@@ -54,6 +55,7 @@ npm run build                           # Production build
 
 ## Recent Changes
 
+- **005-settings-goals-foods** (2025-12-09): Implemented Goals and Custom Foods management in Settings page. Users can now set daily nutritional targets (calories, protein, carbs, fat) and create/edit/delete custom foods. Includes comprehensive tests (32 passing), accessibility enhancements (ARIA labels, error associations), and optimistic UI updates with rollback.
 - **003-ui-ux-tailwind** (2025-12-08): Complete Tailwind CSS migration with dark/light/system theme toggle, full CSS replacement (20 CSS files removed), mobile-responsive design, and modern visual polish
 - 001-macro-calorie-tracker: Macro nutrient and calorie tracking application
 
