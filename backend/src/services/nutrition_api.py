@@ -35,9 +35,16 @@ class USDAClient:
         Initialize USDA API client.
 
         Args:
-            api_key: Optional API key for higher rate limits.
-                    If None, uses public access with lower limits.
+            api_key: USDA API key (required). Get one at https://api.data.gov/signup/
+
+        Raises:
+            ValueError: If api_key is not provided
         """
+        if not api_key:
+            raise ValueError(
+                "USDA API key is required. Get one at https://api.data.gov/signup/ "
+                "and set USDA_API_KEY in your .env file"
+            )
         self.api_key = api_key
         self.client = httpx.Client(timeout=10.0)
 
@@ -59,13 +66,16 @@ class USDAClient:
             'query': query,
             'pageSize': page_size,
             'dataType': ['Foundation', 'SR Legacy'],  # Highest quality data
+            'api_key': self.api_key,
         }
-
-        if self.api_key:
-            params['api_key'] = self.api_key
 
         response = self.client.get(f'{self.BASE_URL}/foods/search', params=params)
 
+        if response.status_code == 403:
+            raise Exception(
+                'USDA API access forbidden. Check your API key or get one at '
+                'https://api.data.gov/signup/'
+            )
         if response.status_code != 200:
             raise Exception(f'USDA API error: {response.status_code}')
 
@@ -89,15 +99,18 @@ class USDAClient:
         Returns:
             USDAFood object with detailed information, or None if not found.
         """
-        params = {}
-        if self.api_key:
-            params['api_key'] = self.api_key
+        params = {'api_key': self.api_key}
 
         response = self.client.get(f'{self.BASE_URL}/food/{fdc_id}', params=params)
 
         if response.status_code == 404:
             return None
 
+        if response.status_code == 403:
+            raise Exception(
+                'USDA API access forbidden. Check your API key or get one at '
+                'https://api.data.gov/signup/'
+            )
         if response.status_code != 200:
             raise Exception(f'USDA API error: {response.status_code}')
 

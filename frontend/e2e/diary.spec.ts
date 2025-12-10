@@ -21,8 +21,8 @@ test.describe('Diary page', () => {
     // Wait for date navigator to be visible
     await expect(authenticatedPage.getByTestId('date-navigator')).toBeVisible();
 
-    // Date navigator should show "Today" label
-    await expect(authenticatedPage.locator('.date-label').filter({ hasText: 'Today' })).toBeVisible();
+    // Date navigator should show "Today" label (use role="status" to get the date display, not the button)
+    await expect(authenticatedPage.getByTestId('date-navigator').getByRole('status').getByText('Today')).toBeVisible();
   });
 });
 
@@ -38,13 +38,13 @@ test.describe('Date navigation', () => {
   test('user can navigate to next day', async ({ authenticatedPage }) => {
     // First go to yesterday
     await authenticatedPage.getByRole('button', { name: 'Previous day' }).click();
-    await expect(authenticatedPage.locator('.date-label').filter({ hasText: 'Yesterday' })).toBeVisible();
+    await expect(authenticatedPage.getByTestId('date-navigator').getByRole('status').getByText('Yesterday')).toBeVisible();
 
     // Then navigate forward
     await authenticatedPage.getByRole('button', { name: 'Next day' }).click();
 
     // Should show "Today" again
-    await expect(authenticatedPage.locator('.date-label').filter({ hasText: 'Today' })).toBeVisible();
+    await expect(authenticatedPage.getByTestId('date-navigator').getByRole('status').getByText('Today')).toBeVisible();
   });
 
   test('user can return to today using Today button', async ({ authenticatedPage }) => {
@@ -56,7 +56,7 @@ test.describe('Date navigation', () => {
     await authenticatedPage.getByRole('button', { name: 'Go to today' }).click();
 
     // Should show "Today"
-    await expect(authenticatedPage.locator('.date-label').filter({ hasText: 'Today' })).toBeVisible();
+    await expect(authenticatedPage.getByTestId('date-navigator').getByRole('status').getByText('Today')).toBeVisible();
   });
 
   test('Today button is disabled when viewing today', async ({ authenticatedPage }) => {
@@ -69,7 +69,7 @@ test.describe('Meal categories', () => {
   test('diary shows meal categories', async ({ authenticatedPage }) => {
     // Wait for diary to load (categories come from backend)
     // Categories should be visible (Breakfast, Lunch, Dinner are defaults)
-    const categories = authenticatedPage.locator('.meal-category');
+    const categories = authenticatedPage.locator('section[role="region"]');
 
     // Should have at least one category (backend creates defaults on registration)
     await expect(categories.first()).toBeVisible({ timeout: 10000 });
@@ -77,7 +77,7 @@ test.describe('Meal categories', () => {
 
   test('user can click Add button to open add food modal', async ({ authenticatedPage }) => {
     // Wait for categories to load
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
 
     // Click the first "Add" button
     await authenticatedPage.getByRole('button', { name: /add food to/i }).first().click();
@@ -90,7 +90,7 @@ test.describe('Meal categories', () => {
 test.describe('Add food modal', () => {
   test('add food modal has required elements', async ({ authenticatedPage }) => {
     // Wait for categories and open modal
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
     await authenticatedPage.getByRole('button', { name: /add food to/i }).first().click();
 
     // Get modal reference for scoped queries
@@ -116,7 +116,7 @@ test.describe('Add food modal', () => {
 
   test('user can close modal with Cancel button', async ({ authenticatedPage }) => {
     // Open modal
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
     await authenticatedPage.getByRole('button', { name: /add food to/i }).first().click();
     await expect(authenticatedPage.getByTestId('add-food-modal')).toBeVisible();
 
@@ -129,7 +129,7 @@ test.describe('Add food modal', () => {
 
   test('user can close modal with X button', async ({ authenticatedPage }) => {
     // Open modal
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
     await authenticatedPage.getByRole('button', { name: /add food to/i }).first().click();
     await expect(authenticatedPage.getByTestId('add-food-modal')).toBeVisible();
 
@@ -142,7 +142,7 @@ test.describe('Add food modal', () => {
 
   test('user can add food manually', async ({ authenticatedPage }) => {
     // Open modal
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
     await authenticatedPage.getByRole('button', { name: /add food to/i }).first().click();
 
     // Get modal reference for scoped queries
@@ -170,7 +170,7 @@ test.describe('Add food modal', () => {
 
   test('form shows validation error for empty food name', async ({ authenticatedPage }) => {
     // Open modal
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
     await authenticatedPage.getByRole('button', { name: /add food to/i }).first().click();
 
     // Get modal reference for scoped queries
@@ -188,7 +188,7 @@ test.describe('Add food modal', () => {
 test.describe('Macro display', () => {
   test('diary shows macro totals', async ({ authenticatedPage }) => {
     // Wait for diary to load
-    await authenticatedPage.waitForSelector('.meal-category', { timeout: 10000 });
+    await expect(authenticatedPage.locator('section[role="region"]').first()).toBeVisible({ timeout: 10000 });
 
     // Macro display should show labels
     await expect(authenticatedPage.getByText(/calories/i)).toBeVisible();

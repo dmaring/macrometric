@@ -27,8 +27,8 @@ export default function FoodSearch({ onSelect }: FoodSearchProps) {
     setError(null);
 
     try {
-      const foods = await searchFoods(searchQuery);
-      setResults(foods);
+      const response = await searchFoods(searchQuery);
+      setResults(response.results);
     } catch (err) {
       console.error('Food search error:', err);
       setError('Error searching for foods. Please try again.');

@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from src.core.deps import get_db, get_current_user
+from src.core.config import settings
 from src.models.user import User
 from src.services.food_search import FoodSearchService
 
@@ -47,7 +48,7 @@ def search_foods(
 
     Returns foods from USDA database and custom foods.
     """
-    service = FoodSearchService(db)
+    service = FoodSearchService(db, usda_api_key=settings.USDA_API_KEY)
     results = service.search(q, user_id=current_user.id, limit=limit)
 
     return FoodSearchResponse(
@@ -66,7 +67,7 @@ def get_food_details(
 
     Food ID format: "source:id" (e.g., "usda:171688")
     """
-    service = FoodSearchService(db)
+    service = FoodSearchService(db, usda_api_key=settings.USDA_API_KEY)
     food = service.get_food(food_id, user_id=current_user.id)
 
     if not food:
