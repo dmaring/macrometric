@@ -50,20 +50,6 @@ A comprehensive food tracking application for logging daily macro nutrients and 
 </tr>
 </table>
 
-### Responsive Design
-<table>
-<tr>
-<td width="33%"><img src=".playwright-mcp/mobile-320px-diary.png" alt="Mobile 320px"/></td>
-<td width="33%"><img src=".playwright-mcp/tablet-768px-diary.png" alt="Tablet 768px"/></td>
-<td width="33%"><img src=".playwright-mcp/desktop-1920px-diary.png" alt="Desktop 1920px"/></td>
-</tr>
-<tr>
-<td align="center"><em>Mobile (320px)</em></td>
-<td align="center"><em>Tablet (768px)</em></td>
-<td align="center"><em>Desktop (1920px)</em></td>
-</tr>
-</table>
-
 ---
 
 ## 🚀 Quick Start
@@ -426,7 +412,6 @@ Macrometric was built using **spec-driven development** with OpenSpec/Spec Kit -
 - **Living Documentation**: Specs auto-generate CLAUDE.md with current architecture
 
 **Learn More:**
-- Read the full article: [`article-spec-driven-development.md`](./article-spec-driven-development.md)
 - Browse feature specs: [`specs/`](./specs/) directory
 - See the constitution: [`.specify/memory/constitution.md`](./.specify/memory/constitution.md)
 
