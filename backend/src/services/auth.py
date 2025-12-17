@@ -24,6 +24,9 @@ class AuthService:
     # Password validation regex: at least 8 chars, 1 letter, 1 number
     PASSWORD_PATTERN = re.compile(r'^(?=.*[A-Za-z])(?=.*\d).{8,}$')
 
+    # Username validation regex: alphanumeric, underscore, hyphen only
+    USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_-]+$')
+
     def __init__(self, db: Session):
         self.db = db
 
@@ -37,9 +40,35 @@ class AuthService:
         """
         return bool(self.PASSWORD_PATTERN.match(password))
 
+    def validate_username(self, username: str) -> bool:
+        """Validate username meets requirements.
+
+        Requirements:
+        - Only alphanumeric characters, underscores, and hyphens
+        - Length between 1 and 30 characters
+        """
+        return (
+            len(username) > 0
+            and len(username) <= 30
+            and bool(self.USERNAME_PATTERN.match(username))
+        )
+
+    def validate_name(self, name: str) -> bool:
+        """Validate name meets requirements.
+
+        Requirements:
+        - Length between 1 and 100 characters
+        - Not just whitespace
+        """
+        return len(name.strip()) > 0 and len(name) <= 100
+
     def get_user_by_email(self, email: str) -> Optional[User]:
         """Get a user by email address."""
         return self.db.query(User).filter(User.email == email.lower()).first()
+
+    def get_user_by_username(self, username: str) -> Optional[User]:
+        """Get a user by username."""
+        return self.db.query(User).filter(User.username == username).first()
 
     def get_user_by_id(self, user_id: uuid.UUID) -> Optional[User]:
         """Get a user by ID."""
@@ -49,21 +78,27 @@ class AuthService:
         self,
         email: str,
         password: str,
+        name: str,
+        username: str,
     ) -> Tuple[User, str, str]:
         """Register a new user.
 
         Args:
             email: User's email address
             password: User's password
+            name: User's full name
+            username: User's chosen username
 
         Returns:
             Tuple of (user, access_token, refresh_token)
 
         Raises:
-            HTTPException: If email already exists or password is invalid
+            HTTPException: If email/username already exists or validation fails
         """
-        # Normalize email
+        # Normalize inputs
         email = email.lower().strip()
+        name = name.strip()
+        username = username.strip()
 
         # Check if email already exists
         existing_user = self.get_user_by_email(email)
@@ -73,6 +108,14 @@ class AuthService:
                 detail="Email already registered",
             )
 
+        # Check if username already exists
+        existing_username = self.get_user_by_username(username)
+        if existing_username:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username already taken",
+            )
+
         # Validate password
         if not self.validate_password(password):
             raise HTTPException(
@@ -80,10 +123,26 @@ class AuthService:
                 detail="Password must be at least 8 characters with at least one letter and one number",
             )
 
+        # Validate name
+        if not self.validate_name(name):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Name must be between 1 and 100 characters and not just whitespace",
+            )
+
+        # Validate username
+        if not self.validate_username(username):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Username must be between 1 and 30 characters and contain only letters, numbers, underscores, and hyphens",
+            )
+
         # Create user
         user = User(
             email=email,
             password_hash=get_password_hash(password),
+            name=name,
+            username=username,
             onboarding_completed=False,
         )
         self.db.add(user)
@@ -288,3 +347,53 @@ class AuthService:
         # 1. Invalidate all existing refresh tokens
         # 2. Send a confirmation email
         # 3. Log the password change for security auditing
+
+    def update_profile(self, user: User, name: str, username: str) -> User:
+        """Update a user's profile (name and username).
+
+        Args:
+            user: The user to update
+            name: New name
+            username: New username
+
+        Returns:
+            Updated user
+
+        Raises:
+            HTTPException: If validation fails or username is already taken
+        """
+        # Normalize inputs
+        name = name.strip()
+        username = username.strip()
+
+        # Validate name
+        if not self.validate_name(name):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Name must be between 1 and 100 characters and not just whitespace",
+            )
+
+        # Validate username
+        if not self.validate_username(username):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Username must be between 1 and 30 characters and contain only letters, numbers, underscores, and hyphens",
+            )
+
+        # Check if username is being changed
+        if username != user.username:
+            # Check if new username is already taken by another user
+            existing_user = self.get_user_by_username(username)
+            if existing_user and existing_user.id != user.id:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Username already taken",
+                )
+
+        # Update user fields
+        user.name = name
+        user.username = username
+        self.db.commit()
+        self.db.refresh(user)
+
+        return user

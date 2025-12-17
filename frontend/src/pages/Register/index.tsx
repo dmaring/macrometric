@@ -6,6 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 interface FormErrors {
+  name?: string;
+  username?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -29,6 +31,8 @@ function getPasswordStrength(password: string): PasswordStrength {
 }
 
 export default function Register() {
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,6 +47,22 @@ export default function Register() {
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
+
+    // Name validation
+    if (!name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (name.length > 100) {
+      newErrors.name = 'Name must be 100 characters or less';
+    }
+
+    // Username validation
+    if (!username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (username.length > 30) {
+      newErrors.username = 'Username must be 30 characters or less';
+    } else if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      newErrors.username = 'Username can only contain letters, numbers, underscores, and hyphens';
+    }
 
     // Email validation
     if (!email.trim()) {
@@ -84,10 +104,17 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      await register({ email, password });
+      await register({ name, username, email, password });
       navigate('/onboarding');
-    } catch (err) {
-      setServerError('Registration failed. Email may already be registered.');
+    } catch (err: any) {
+      // Check for specific error messages from the backend
+      if (err?.response?.data?.detail?.includes('Username already taken')) {
+        setServerError('Username already taken. Please choose a different username.');
+      } else if (err?.response?.data?.detail?.includes('Email already registered')) {
+        setServerError('Email already registered. Please use a different email.');
+      } else {
+        setServerError('Registration failed. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -106,6 +133,66 @@ export default function Register() {
         <p className="text-center text-content-secondary mb-6">Join Macrometric today</p>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <div>
+            <label
+              htmlFor="name"
+              className="block mb-2 font-medium text-content"
+            >
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? 'name-error' : undefined}
+              disabled={isSubmitting}
+              maxLength={100}
+              className="w-full px-3 py-2 text-base border rounded-md bg-surface-tertiary border-border text-content transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed aria-[invalid=true]:border-error"
+            />
+            {errors.name && (
+              <span
+                id="name-error"
+                className="block mt-1 text-sm text-error"
+                role="alert"
+              >
+                {errors.name}
+              </span>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="username"
+              className="block mb-2 font-medium text-content"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              aria-invalid={!!errors.username}
+              aria-describedby={errors.username ? 'username-error' : undefined}
+              disabled={isSubmitting}
+              maxLength={30}
+              className="w-full px-3 py-2 text-base border rounded-md bg-surface-tertiary border-border text-content transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed aria-[invalid=true]:border-error"
+            />
+            {errors.username && (
+              <span
+                id="username-error"
+                className="block mt-1 text-sm text-error"
+                role="alert"
+              >
+                {errors.username}
+              </span>
+            )}
+          </div>
+
           <div>
             <label
               htmlFor="email"

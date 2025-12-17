@@ -34,10 +34,11 @@ import {
   deleteCustomFood,
   CustomFood,
 } from '../../services/customFoods';
+import { updateProfile } from '../../services/auth';
 import api from '../../services/api';
 
 const Settings: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout, user, updateUserProfile } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'goals' | 'foods' | 'meals' | 'categories' | 'account'>('meals');
   const [meals, setMeals] = useState<CustomMeal[]>([]);
@@ -53,6 +54,11 @@ const Settings: React.FC = () => {
   const [categories, setCategories] = useState<MealCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [categoriesError, setCategoriesError] = useState('');
+  const [profileName, setProfileName] = useState('');
+  const [profileUsername, setProfileUsername] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState('');
+  const [profileError, setProfileError] = useState('');
   const navigate = useNavigate();
 
   // Load custom meals
@@ -75,6 +81,14 @@ const Settings: React.FC = () => {
       loadCategories();
     }
   }, [activeTab]);
+
+  // Initialize profile fields when user data is available
+  useEffect(() => {
+    if (user) {
+      setProfileName(user.name || '');
+      setProfileUsername(user.username || '');
+    }
+  }, [user]);
 
   const loadMeals = async () => {
     setMealsLoading(true);
@@ -193,6 +207,51 @@ const Settings: React.FC = () => {
     }
   };
 
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileError('');
+    setProfileSuccess('');
+
+    // Validation
+    if (!profileName.trim() || !profileUsername.trim()) {
+      setProfileError('Name and username are required');
+      return;
+    }
+
+    if (profileName.length > 100) {
+      setProfileError('Name must be 100 characters or less');
+      return;
+    }
+
+    if (profileUsername.length > 30) {
+      setProfileError('Username must be 30 characters or less');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_-]+$/.test(profileUsername)) {
+      setProfileError('Username can only contain letters, numbers, underscores, and hyphens');
+      return;
+    }
+
+    setProfileSaving(true);
+
+    try {
+      await updateProfile(profileName, profileUsername);
+      setProfileSuccess('Profile updated successfully');
+
+      // Update auth context with new profile data
+      updateUserProfile(profileName, profileUsername);
+    } catch (err: any) {
+      if (err?.response?.data?.detail?.includes('Username already taken')) {
+        setProfileError('Username already taken. Please choose a different username.');
+      } else {
+        setProfileError('Failed to update profile. Please try again.');
+      }
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     try {
       await api.delete('/users/me');
@@ -212,14 +271,30 @@ const Settings: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 bg-surface min-h-screen transition-colors duration-200">
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-8 gap-4">
-        <h1 className="m-0 text-3xl text-content font-bold">Settings</h1>
-        <button
-          type="button"
-          onClick={() => navigate('/diary')}
-          className="px-6 py-3 bg-content-secondary text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-content-tertiary min-h-[44px]"
-        >
-          Back to Diary
-        </button>
+        <div className="flex items-center gap-4">
+          <h1 className="m-0 text-3xl text-content font-bold">Settings</h1>
+          {user && (
+            <span className="text-sm font-medium text-content-secondary truncate max-w-[150px] sm:max-w-[200px]" title={user.username || user.email}>
+              {user.username || user.email}
+            </span>
+          )}
+        </div>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => navigate('/diary')}
+            className="px-6 py-3 bg-content-secondary text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-content-tertiary min-h-[44px]"
+          >
+            Back to Diary
+          </button>
+          <button
+            type="button"
+            onClick={logout}
+            className="px-6 py-3 bg-transparent text-content-secondary border border-border rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-surface-tertiary min-h-[44px]"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2 border-b-2 border-border mb-8 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
@@ -355,6 +430,66 @@ const Settings: React.FC = () => {
         {activeTab === 'account' && (
           <div className="bg-surface-secondary rounded-lg p-8 shadow-sm">
             <h2 className="m-0 mb-6 text-2xl text-content font-semibold">Account Settings</h2>
+
+            <form onSubmit={handleUpdateProfile} className="p-6 border border-border rounded-lg mb-6 bg-surface">
+              <h3 className="m-0 mb-3 text-lg text-content font-semibold">Profile</h3>
+              <p className="m-0 mb-4 text-content-secondary text-sm leading-relaxed">
+                Update your name and username. Your username is displayed in the application header.
+              </p>
+
+              {profileSuccess && (
+                <div className="p-3 mb-4 bg-success/10 border border-success rounded-md text-success text-sm">
+                  {profileSuccess}
+                </div>
+              )}
+
+              {profileError && (
+                <div className="p-3 mb-4 bg-error/10 border border-error rounded-md text-error text-sm">
+                  {profileError}
+                </div>
+              )}
+
+              <div className="mb-4">
+                <label htmlFor="profile-name" className="block mb-2 text-sm font-medium text-content">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="profile-name"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  disabled={profileSaving}
+                  maxLength={100}
+                  className="w-full px-3 py-2 border rounded-md bg-surface-tertiary border-border text-content focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="profile-username" className="block mb-2 text-sm font-medium text-content">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="profile-username"
+                  value={profileUsername}
+                  onChange={(e) => setProfileUsername(e.target.value)}
+                  disabled={profileSaving}
+                  maxLength={30}
+                  className="w-full px-3 py-2 border rounded-md bg-surface-tertiary border-border text-content focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+                />
+                <p className="mt-1 text-xs text-content-secondary">
+                  Only letters, numbers, underscores, and hyphens allowed (max 30 characters)
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={profileSaving}
+                className="px-6 py-3 bg-primary text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-all duration-200 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed min-h-[44px]"
+              >
+                {profileSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </form>
 
             <div className="p-6 border border-border rounded-lg mb-6 bg-surface">
               <h3 className="m-0 mb-3 text-lg text-content font-semibold">Theme</h3>

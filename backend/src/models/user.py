@@ -16,6 +16,8 @@ class User(BaseModel):
 
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
+    name = Column(String(100), nullable=True)  # Full name, max 100 chars
+    username = Column(String(30), unique=True, nullable=True, index=True)  # Display name, max 30 chars, must be unique
     onboarding_completed = Column(Boolean, default=False, nullable=False)
 
     # Relationships

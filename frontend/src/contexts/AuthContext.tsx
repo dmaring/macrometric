@@ -16,6 +16,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   clearError: () => void;
   completeOnboarding: () => void;
+  updateUserProfile: (name: string, username: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -57,6 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser({
         id: response.id,
         email: response.email,
+        name: response.name,
+        username: response.username,
         onboarding_completed: response.onboarding_completed,
       });
       return response;
@@ -74,6 +77,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser({
         id: response.id,
         email: response.email,
+        name: response.name,
+        username: response.username,
         onboarding_completed: response.onboarding_completed,
       });
       return response;
@@ -98,6 +103,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(prev => prev ? { ...prev, onboarding_completed: true } : null);
   }, []);
 
+  const updateUserProfile = useCallback((name: string, username: string) => {
+    setUser(prev => prev ? { ...prev, name, username } : null);
+  }, []);
+
   const value: AuthContextType = {
     user,
     loading,
@@ -109,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     clearError,
     completeOnboarding,
+    updateUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

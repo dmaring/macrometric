@@ -21,7 +21,7 @@ interface SelectedCategory {
 }
 
 export default function DiaryPage() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   const [selectedCategory, setSelectedCategory] = useState<SelectedCategory | null>(null);
@@ -147,7 +147,12 @@ export default function DiaryPage() {
     <div className="min-h-screen bg-surface transition-colors duration-200" data-testid="diary-page">
       <header className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between px-4 sm:px-6 py-4 bg-surface-secondary border-b border-border gap-4 sm:gap-0">
         <h1 className="text-2xl font-semibold text-content text-center sm:text-left m-0">MacroMetric</h1>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          {user && (
+            <span className="text-sm font-medium text-content truncate max-w-[150px] sm:max-w-[200px]" title={user.username || user.email}>
+              {user.username || user.email}
+            </span>
+          )}
           <button
             className="px-4 py-2 text-sm font-medium text-content-secondary bg-transparent border border-border rounded transition-all duration-200 hover:text-content hover:bg-surface-tertiary cursor-pointer min-h-[44px]"
             onClick={() => navigate('/settings')}

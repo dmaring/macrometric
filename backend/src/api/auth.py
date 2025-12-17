@@ -15,6 +15,8 @@ class UserRegisterRequest(BaseModel):
     """User registration request."""
     email: EmailStr
     password: str
+    name: str
+    username: str
 
 
 class UserLoginRequest(BaseModel):
@@ -39,6 +41,8 @@ class UserResponse(BaseModel):
     """User data response."""
     id: str
     email: str
+    name: str | None = None
+    username: str | None = None
     onboarding_completed: bool
 
     class Config:
@@ -49,6 +53,8 @@ class AuthResponse(TokenResponse):
     """Full authentication response with tokens and user data."""
     id: str
     email: str
+    name: str | None = None
+    username: str | None = None
     onboarding_completed: bool
 
 
@@ -65,6 +71,12 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     """Password reset confirmation with new password."""
     password: str
+
+
+class UpdateProfileRequest(BaseModel):
+    """Profile update request."""
+    name: str
+    username: str
 
 
 @router.post(
@@ -86,11 +98,15 @@ def register(
     user, access_token, refresh_token = auth_service.register(
         email=data.email,
         password=data.password,
+        name=data.name,
+        username=data.username,
     )
 
     return AuthResponse(
         id=str(user.id),
         email=user.email,
+        name=user.name,
+        username=user.username,
         onboarding_completed=user.onboarding_completed,
         access_token=access_token,
         refresh_token=refresh_token,
@@ -116,6 +132,8 @@ def login(
     return AuthResponse(
         id=str(user.id),
         email=user.email,
+        name=user.name,
+        username=user.username,
         onboarding_completed=user.onboarding_completed,
         access_token=access_token,
         refresh_token=refresh_token,
@@ -172,6 +190,8 @@ def get_me(
     return UserResponse(
         id=str(current_user.id),
         email=current_user.email,
+        name=current_user.name,
+        username=current_user.username,
         onboarding_completed=current_user.onboarding_completed,
     )
 
@@ -217,3 +237,33 @@ def reset_password(
     auth_service.reset_password(token=token, new_password=data.password)
 
     return MessageResponse(message="Password has been reset successfully")
+
+
+@router.put(
+    "/profile",
+    response_model=UserResponse,
+    summary="Update user profile",
+)
+def update_profile(
+    data: UpdateProfileRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Update the current user's profile (name and username).
+
+    Validates that username is unique before updating.
+    """
+    auth_service = AuthService(db)
+    updated_user = auth_service.update_profile(
+        user=current_user,
+        name=data.name,
+        username=data.username,
+    )
+
+    return UserResponse(
+        id=str(updated_user.id),
+        email=updated_user.email,
+        name=updated_user.name,
+        username=updated_user.username,
+        onboarding_completed=updated_user.onboarding_completed,
+    )

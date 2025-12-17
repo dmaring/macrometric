@@ -9,6 +9,8 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
+  name: string;
+  username: string;
   email: string;
   password: string;
 }
@@ -16,6 +18,8 @@ export interface RegisterCredentials {
 export interface AuthResponse {
   id: string;
   email: string;
+  name?: string | null;
+  username?: string | null;
   onboarding_completed: boolean;
   access_token: string;
   refresh_token: string;
@@ -31,6 +35,8 @@ export interface TokenResponse {
 export interface User {
   id: string;
   email: string;
+  name?: string | null;
+  username?: string | null;
   onboarding_completed: boolean;
 }
 
@@ -127,6 +133,17 @@ export async function confirmPasswordReset(
 ): Promise<{ message: string }> {
   const response = await api.post<{ message: string }>(`/auth/password-reset/${token}`, {
     password,
+  });
+  return response.data;
+}
+
+/**
+ * Update user profile (name and username).
+ */
+export async function updateProfile(name: string, username: string): Promise<User> {
+  const response = await api.put<User>('/auth/profile', {
+    name,
+    username,
   });
   return response.data;
 }
