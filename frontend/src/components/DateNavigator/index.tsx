@@ -72,13 +72,14 @@ export default function DateNavigator({ date, onDateChange }: DateNavigatorProps
 
   return (
     <div
-      className="flex flex-wrap items-center justify-center gap-4 px-4 py-3 bg-surface-secondary rounded-lg border border-border focus:outline-2 focus:outline-primary focus:outline-offset-2"
+      className="relative flex items-center justify-between px-4 py-3 bg-surface-secondary rounded-lg border border-border focus:outline-2 focus:outline-primary focus:outline-offset-2"
       data-testid="date-navigator"
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="group"
       aria-label="Date navigation"
     >
+      {/* Left arrow - far left */}
       <button
         className="w-9 h-9 min-w-[44px] min-h-[44px] text-xl text-content-secondary bg-surface-tertiary border-none rounded cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-surface hover:text-content"
         onClick={goToPrevious}
@@ -87,27 +88,31 @@ export default function DateNavigator({ date, onDateChange }: DateNavigatorProps
         ←
       </button>
 
-      <div className="flex-1 text-center min-w-[150px]" role="status" aria-label="Current date">
+      {/* Date - absolutely centered */}
+      <div className="absolute left-1/2 -translate-x-1/2 text-center" role="status" aria-label="Current date">
         <span className="block text-lg font-semibold text-content">{dateLabel}</span>
         <span className="block text-xs text-content-tertiary mt-0.5">{formatDate(date)}</span>
       </div>
 
-      <button
-        className="w-9 h-9 min-w-[44px] min-h-[44px] text-xl text-content-secondary bg-surface-tertiary border-none rounded cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-surface hover:text-content"
-        onClick={goToNext}
-        aria-label="Next day"
-      >
-        →
-      </button>
-
-      <button
-        className="px-4 py-2 text-sm font-medium text-primary bg-transparent border border-primary rounded cursor-pointer transition-all duration-200 hover:bg-primary/10 disabled:text-border disabled:border-border disabled:cursor-not-allowed disabled:bg-transparent min-h-[44px] sm:w-auto w-full sm:mt-0 mt-2"
-        onClick={goToToday}
-        disabled={isToday}
-        aria-label="Go to today"
-      >
-        Today
-      </button>
+      {/* Right group: Today button + Right arrow */}
+      <div className="flex items-center gap-2">
+        {!isToday && (
+          <button
+            className="px-4 py-2 text-sm font-medium text-primary bg-transparent border border-primary rounded cursor-pointer transition-all duration-200 hover:bg-primary/10 min-h-[44px]"
+            onClick={goToToday}
+            aria-label="Go to today"
+          >
+            Today
+          </button>
+        )}
+        <button
+          className="w-9 h-9 min-w-[44px] min-h-[44px] text-xl text-content-secondary bg-surface-tertiary border-none rounded cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-surface hover:text-content"
+          onClick={goToNext}
+          aria-label="Next day"
+        >
+          →
+        </button>
+      </div>
     </div>
   );
 }
