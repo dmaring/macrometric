@@ -378,12 +378,6 @@ diary_entries (*) ─> (1) diary_foods
 
 ---
 
-## 📝 License
-
-[Add your license here]
-
----
-
 ## 🙏 Acknowledgments
 
 - **USDA FoodData Central** - Food nutrition database
@@ -396,7 +390,7 @@ diary_entries (*) ─> (1) diary_foods
 ## 📞 Support
 
 For issues and questions:
-- GitHub Issues: [Add your repo URL]
+- GitHub Issues: https://github.com/dmaring/macrometric
 - Documentation: See `specs/` directory
 - Quick Start Guide: `specs/001-macro-calorie-tracker/quickstart.md`
 
