@@ -48,6 +48,10 @@ docker-compose exec backend alembic revision --autogenerate -m "desc"   # Create
 docker-compose exec backend alembic downgrade -1                        # Rollback one migration
 # Note: Migrations run automatically when the backend container starts
 
+# Reset database and seed test user
+docker-compose exec backend python scripts/reset_db.py
+# Creates test user: test@test.com / Test1234
+
 # Tests (from respective directories)
 cd backend && uv run pytest      # Backend tests
 cd frontend && npm test          # Frontend tests
@@ -55,6 +59,16 @@ cd frontend && npm test          # Frontend tests
 # Frontend build
 cd frontend && npm run build     # Production build
 ```
+
+## Test Accounts
+
+Run `docker-compose exec backend python scripts/reset_db.py` to reset the database and create:
+
+| Field    | Value          |
+|----------|----------------|
+| Email    | test@test.com  |
+| Password | Test1234       |
+| Username | testuser       |
 
 ## Code Style
 

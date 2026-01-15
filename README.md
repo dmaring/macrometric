@@ -68,52 +68,68 @@ git clone <repository-url>
 cd macrometric
 ```
 
-### 2. Start Database
+### 2. Start All Services (Recommended)
 
-**Option A: Docker Compose**
 ```bash
+# Start database, backend, and frontend with Docker Compose
+docker-compose up
+
+# Or run in detached mode
 docker-compose up -d
 ```
 
-**Option B: Local PostgreSQL**
+This starts:
+- **PostgreSQL** on port 5432
+- **Backend API** on http://localhost:8000
+- **Frontend** on http://localhost:3000
+
+### 3. Reset Database & Create Test User
+
+```bash
+docker-compose exec backend python scripts/reset_db.py
+```
+
+This creates a test account:
+| Field    | Value          |
+|----------|----------------|
+| Email    | test@test.com  |
+| Password | Test1234       |
+| Username | testuser       |
+
+### 4. Access Application
+
+Open http://localhost:3000 in your browser and log in with the test account or create a new one!
+
+---
+
+### Alternative: Manual Setup (without Docker)
+
+<details>
+<summary>Click to expand manual setup instructions</summary>
+
+**Start Database:**
 - Create database: `createdb macrometric`
 - Update `backend/.env` with your connection string
 
-### 3. Setup Backend
-
+**Setup Backend:**
 ```bash
 cd backend
-
-# Create virtual environment and install dependencies
 uv venv && source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv pip install -e ".[dev]"
-
-# Run database migrations
 uv run alembic upgrade head
-
-# Start development server
 uv run uvicorn main:app --reload
 ```
-
 Backend will run on `http://localhost:8000`
 
-### 4. Setup Frontend
-
+**Setup Frontend:**
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
-
 Frontend will run on `http://localhost:5173`
 
-### 5. Access Application
-
-Open http://localhost:5173 in your browser and create an account!
+</details>
 
 ---
 
@@ -252,53 +268,67 @@ Once the backend is running, visit:
 
 ## 🔧 Development
 
-### Backend Commands
+### Docker Compose Commands (Recommended)
 
 ```bash
-# Install dependencies
-uv pip install -e ".[dev]"
+# Start all services
+docker-compose up
 
-# Run development server
-uv run uvicorn main:app --reload
+# Start in detached mode
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Reset database and seed test user
+docker-compose exec backend python scripts/reset_db.py
+
+# Run database migrations
+docker-compose exec backend alembic upgrade head
 
 # Create new migration
+docker-compose exec backend alembic revision --autogenerate -m "Description"
+
+# Run backend tests
+docker-compose exec backend pytest
+
+# Run frontend tests
+docker-compose exec frontend npm test
+```
+
+### Manual Commands (without Docker)
+
+<details>
+<summary>Click to expand manual commands</summary>
+
+**Backend:**
+```bash
+cd backend
+uv pip install -e ".[dev]"
+uv run uvicorn main:app --reload
 uv run alembic revision --autogenerate -m "Description"
-
-# Run migrations
 uv run alembic upgrade head
-
-# Rollback migration
 uv run alembic downgrade -1
-
-# Run tests
 uv run pytest
-
-# Format code
 uv run black src/ tests/
 uv run isort src/ tests/
 ```
 
-### Frontend Commands
-
+**Frontend:**
 ```bash
-# Install dependencies
+cd frontend
 npm install
-
-# Run development server
 npm run dev
-
-# Build for production
 npm run build
-
-# Preview production build
 npm run preview
-
-# Run tests
 npm test
-
-# Lint code
 npm run lint
 ```
+
+</details>
 
 ---
 
